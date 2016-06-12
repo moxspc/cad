@@ -1,0 +1,29 @@
+{
+  "name": "mox",
+  "version": "0.0.1",
+  "description": "Geometry Kernel API, implemented as Node bindings to OpenCASCADE.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "node-gyp rebuild"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://jay3sh@github.com/moxspc/mox.git"
+  },
+  "keywords": [
+    "CAD",
+    "Geometry",
+    "Math"
+  ],
+  "author": "Jayesh Salvi",
+  "license": "GPL-3.0",
+  "gypfile": true,
+  "bugs": {
+    "url": "https://github.com/moxspc/mox/issues"
+  },
+  "homepage": "https://github.com/moxspc/mox#readme",
+  "dependencies": {
+    "nan": "^2.3.5"
+  }
+}

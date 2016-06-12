@@ -2,8 +2,12 @@
   "targets": [
     {
       "target_name": "mox",
-      "include_dirs" : ["inc","<(OCC_ROOT)/include/opencascade"],
-      "sources": [ "src/mox.cpp" ],
+      "include_dirs" : [
+        "inc",
+        "<(OCC_ROOT)/include/opencascade",
+        "<!(node -e \"require('nan')\")"
+      ],
+      "sources": [ '<!@(ls -1 src/*.cpp)' ],
       "cflags": ['-fPIC', '-std=c++0x','-stdlib=libc++', '-Wall'],
       "cflags_cc!": ['-fno-rtti', '-fno-exceptions' ],
       "xcode_settings" : {
@@ -14,8 +18,8 @@
       "link_settings": {
         "libraries": [
           '-L<(OCC_ROOT)/lib',
-          '-Wl,-rpath,<(OCC_ROOT)/lib',
           '-lFWOSPlugin',
+          '-Wl,-rpath,<(OCC_ROOT)/lib',
           '-lTKBO',
           '-lTKBRep',
           '-lTKBin',

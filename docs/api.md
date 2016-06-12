@@ -9,6 +9,9 @@
   - **Point**
     - *constructor(x=0,y=0,z=0)*
     - *set(x,y,z)*
+    - *x()->Number*
+    - *y()->Number*
+    - *z()->Number*
   - **LineSegment**
     - *static make(fromPoint, toPoint)*
   - **CircleArc**

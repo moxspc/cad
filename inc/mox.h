@@ -1,6 +1,6 @@
 
-#ifndef __MOX_H__
-#define __MOX_H__
+#ifndef MOX_H
+#define MOX_H
 
 #include "node.h"
 
