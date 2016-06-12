@@ -1,26 +1,36 @@
 
 
-(Convention: **Class**, *Method*, `namespace`)
+(Convention: **Class**, *method(args)->returnValue*, `namespace`)
 
 ---
 `mox`
 
 * `geom`
-
+  - **Point**
+    - *constructor(x=0,y=0,z=0)*
+    - *set(x,y,z)*
   - **LineSegment**
+    - *static make(fromPoint, toPoint)*
+  - **CircleArc**
   - **EllipseArc**
-  - **Bezier**
-  - **BSpline**
-  
-* `topo`
+  - **BezierCurve**
+  - **BSplineCurve**
 
+* `topo`
   - **Vertex**
   - **Edge**
   - **Face**
+    - *static make(wire)*
   - **Wire**
-    - *addEdge*
+    - *constructor(edges)*
+    - *addEdge(edge)*
   - **Shell**
   - **Solid**
-  
+
+* `ops`
+  - *extrude(face)->Solid*
+  - *revolve()->Solid*
+  - *fillet(solid, edges)*
+  - *chamfer(solid, edges)*
 
 
