@@ -12,7 +12,7 @@ mox::Point::~Point()
 {
 }
 
-void mox::Point::Init(v8::Local<v8::Object> exports) {
+void mox::Point::Init(v8::Local<v8::FunctionTemplate> exports) {
   Nan::HandleScope scope;
 
   // Prepare constructor template
@@ -29,6 +29,7 @@ void mox::Point::Init(v8::Local<v8::Object> exports) {
 
   constructor.Reset(tpl->GetFunction());
   exports->Set(Nan::New("Point").ToLocalChecked(), tpl->GetFunction());
+  //Nan::SetMethod(exports, "Point", tpl->GetFunction());
 }
 
 void mox::Point::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
@@ -78,10 +79,11 @@ void mox::Point::GetZ(const Nan::FunctionCallbackInfo<v8::Value>& info) {
 void mox::Point::SetXYZ(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   Point* obj = ObjectWrap::Unwrap<Point>(info.Holder());
   if(info.Length() != 3) {
-    Nan::ThrowTypeError("Wrong number of arguments");
+    Nan::ThrowError("Wrong number of arguments");
     return;
   }
   obj->m_point.SetX(info[0]->NumberValue());
   obj->m_point.SetY(info[1]->NumberValue());
   obj->m_point.SetZ(info[2]->NumberValue());
+  info.GetReturnValue().Set(info.This());
 }

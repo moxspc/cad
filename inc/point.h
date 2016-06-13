@@ -8,7 +8,7 @@ namespace mox {
 
   class Point : public Nan::ObjectWrap {
   public:
-    static void Init(v8::Local<v8::Object> exports);
+    static void Init(v8::Local<v8::FunctionTemplate> exports);
 
   private:
     explicit Point(double x, double y, double z);
