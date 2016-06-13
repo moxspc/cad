@@ -9,6 +9,7 @@ namespace mox {
   class Point : public Nan::ObjectWrap {
   public:
     static void Init(v8::Local<v8::Object> namespc);
+    const gp_Pnt& toOCC() { return m_point; }
 
   private:
     explicit Point(double x, double y, double z);
@@ -23,6 +24,7 @@ namespace mox {
     static void GetZ(const Nan::FunctionCallbackInfo<v8::Value>& info);
 
     static void SetXYZ(const Nan::FunctionCallbackInfo<v8::Value>& info);
+
 
     gp_Pnt m_point;
   };

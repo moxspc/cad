@@ -11,9 +11,11 @@
       "cflags": ['-fPIC', '-std=c++0x','-stdlib=libc++', '-Wall'],
       "cflags_cc!": ['-fno-rtti', '-fno-exceptions' ],
       "xcode_settings" : {
+        'OTHER_CPLUSPLUSFLAGS' : ['-std=c++11','-stdlib=libc++', '-v'],
+        'OTHER_LDFLAGS': ['-stdlib=libc++'],
         'GCC_ENABLE_CPP_RTTI': 'YES',
         'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
-        "OTHER_CFLAGS" : ['-fPIC', '-std=c++0x','-stdlib=libc++', '-Wall']
+        "OTHER_CFLAGS" : ['-fPIC', '-std=c++11','-stdlib=libc++', '-Wall']
       },
       "link_settings": {
         "libraries": [

@@ -2,6 +2,7 @@
 #include "mox.h"
 
 #include "point.h"
+#include "lineseg.h"
 
 #include <gp.hxx>
 #include "gp_XYZ.hxx"
@@ -21,6 +22,7 @@ void mox::init(Local<Object> exports)
 
   v8::Handle<Object> geom = v8::Object::New(isolate);
   mox::Point::Init(geom);
+  mox::LineSegment::Init(geom);
 
   exports->Set(Nan::New("geom").ToLocalChecked(), geom);
 
