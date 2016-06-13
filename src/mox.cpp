@@ -1,7 +1,7 @@
 
 #include "mox.h"
 
-#include "geom.h"
+#include "point.h"
 
 #include <gp.hxx>
 #include "gp_XYZ.hxx"
@@ -17,7 +17,13 @@ void mox::doOCCMath(const FunctionCallbackInfo<Value>& args)
 
 void mox::init(Local<Object> exports)
 {
-  mox::Geom::Init(exports);
+  v8::Isolate *isolate = v8::Isolate::GetCurrent();
+
+  v8::Handle<Object> geom = v8::Object::New(isolate);
+  mox::Point::Init(geom);
+
+  exports->Set(Nan::New("geom").ToLocalChecked(), geom);
+
   NODE_SET_METHOD(exports, "doOCCMath", doOCCMath);
 }
 

@@ -30,3 +30,4 @@
 build
 node_modules
 buildqc
+CMakeLists.txt.user

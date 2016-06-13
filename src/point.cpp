@@ -12,7 +12,7 @@ mox::Point::~Point()
 {
 }
 
-void mox::Point::Init(v8::Local<v8::FunctionTemplate> exports) {
+void mox::Point::Init(v8::Local<v8::Object> namespc) {
   Nan::HandleScope scope;
 
   // Prepare constructor template
@@ -28,8 +28,7 @@ void mox::Point::Init(v8::Local<v8::FunctionTemplate> exports) {
   Nan::SetPrototypeMethod(tpl, "set", SetXYZ);
 
   constructor.Reset(tpl->GetFunction());
-  exports->Set(Nan::New("Point").ToLocalChecked(), tpl->GetFunction());
-  //Nan::SetMethod(exports, "Point", tpl->GetFunction());
+  namespc->Set(Nan::New("Point").ToLocalChecked(), tpl->GetFunction());
 }
 
 void mox::Point::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
