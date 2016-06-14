@@ -17,7 +17,7 @@
     "Math"
   ],
   "author": "Jayesh Salvi",
-  "license": "GPL-3.0",
+  "license": "AGPL-3.0",
   "gypfile": true,
   "bugs": {
     "url": "https://github.com/moxspc/mox/issues"
