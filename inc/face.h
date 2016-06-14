@@ -3,6 +3,7 @@
 
 #include <nan.h>
 #include <TopoDS_Face.hxx>
+#include <TopoDS_Wire.hxx>
 
 namespace mox {
 
@@ -11,14 +12,14 @@ namespace mox {
     static void Init(v8::Local<v8::Object> namespc);
 
   private:
-    explicit Face(const TopoDS_Face& occFace);
+    explicit Face(const TopoDS_Wire& occWire);
     ~Face();
 
     static void New(const Nan::FunctionCallbackInfo<v8::Value>& info);
 
     static Nan::Persistent<v8::Function> constructor;
 
-    const TopoDS_Face& m_face;
+    TopoDS_Face m_face;
   };
 }
 

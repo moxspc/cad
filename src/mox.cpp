@@ -38,6 +38,7 @@ void mox::init(Local<Object> exports)
   v8::Handle<Object> topo = v8::Object::New(isolate);
   mox::Vertex::Init(topo);
   mox::Edge::Init(topo);
+  mox::Face::Init(topo);
   mox::Wire::Init(topo);
 
   exports->Set(Nan::New("geom").ToLocalChecked(), geom);

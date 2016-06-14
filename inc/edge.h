@@ -10,7 +10,7 @@ namespace mox {
   class Edge : public Nan::ObjectWrap {
   public:
     static void Init(v8::Local<v8::Object> namespc);
-    const TopoDS_Edge toOCC() { return m_edge; }
+    TopoDS_Edge toOCC() { return m_edge; }
 
   private:
     explicit Edge(const TopoDS_Edge& occEdge);
@@ -19,7 +19,7 @@ namespace mox {
     static NAN_METHOD(New);
     static Nan::Persistent<v8::Function> constructor;
 
-    const TopoDS_Edge& m_edge;
+    TopoDS_Edge m_edge;
   };
 }
 

@@ -1,4 +1,5 @@
 
+#include <iostream>
 #include "helper.h"
 #include "edge.h"
 #include "wire.h"

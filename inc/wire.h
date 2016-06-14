@@ -10,6 +10,7 @@ namespace mox {
   class Wire : public Nan::ObjectWrap {
   public:
     static void Init(v8::Local<v8::Object> namespc);
+    TopoDS_Wire toOCC() { return m_wire; }
 
   private:
     explicit Wire(const TopTools_ListOfShape& edgelist);
