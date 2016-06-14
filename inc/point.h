@@ -25,7 +25,6 @@ namespace mox {
 
     static void SetXYZ(const Nan::FunctionCallbackInfo<v8::Value>& info);
 
-
     gp_Pnt m_point;
   };
 

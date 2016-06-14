@@ -2,12 +2,14 @@
 #include "mox.h"
 
 #include "point.h"
+#include "vector.h"
 #include "lineseg.h"
 
 #include "vertex.h"
 #include "edge.h"
 #include "face.h"
 #include "wire.h"
+#include "ops.h"
 
 #include <gp.hxx>
 #include "gp_XYZ.hxx"
@@ -33,6 +35,7 @@ void mox::init(Local<Object> exports)
 
   v8::Handle<Object> geom = v8::Object::New(isolate);
   mox::Point::Init(geom);
+  mox::Vector::Init(geom);
   mox::LineSegment::Init(geom);
 
   v8::Handle<Object> topo = v8::Object::New(isolate);
@@ -41,8 +44,12 @@ void mox::init(Local<Object> exports)
   mox::Face::Init(topo);
   mox::Wire::Init(topo);
 
+  v8::Handle<Object> ops = Nan::New<v8::Object>();
+  mox::ops::Init(ops);
+
   exports->Set(Nan::New("geom").ToLocalChecked(), geom);
   exports->Set(Nan::New("topo").ToLocalChecked(), topo);
+  exports->Set(Nan::New("ops").ToLocalChecked(), ops);
 
   NODE_SET_METHOD(exports, "doOCCMath", doOCCMath);
   NODE_SET_METHOD(exports, "doSomething", doSomething);

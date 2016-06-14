@@ -10,6 +10,7 @@ namespace mox {
   class Face : public Nan::ObjectWrap {
   public:
     static void Init(v8::Local<v8::Object> namespc);
+    TopoDS_Face toOCC() { return m_face; }
 
   private:
     explicit Face(const TopoDS_Wire& occWire);

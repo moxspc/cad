@@ -6,3 +6,9 @@
   tpl->InstanceTemplate()->SetInternalFieldCount(1); \
   constructor.Reset(tpl->GetFunction()); \
   namespc->Set(Nan::New(name).ToLocalChecked(), tpl->GetFunction());
+
+#define ALLOW_ONLY_CONSTRUCTOR(info) \
+  if(!info.IsConstructCall()) { \
+    Nan::ThrowError("Only constructor usage with new is supported"); \
+    return; \
+  }
