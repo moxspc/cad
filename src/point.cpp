@@ -12,7 +12,8 @@ mox::Point::~Point()
 {
 }
 
-void mox::Point::Init(v8::Local<v8::Object> namespc) {
+void mox::Point::Init(v8::Local<v8::Object> namespc)
+{
   Nan::HandleScope scope;
 
   // Prepare constructor template

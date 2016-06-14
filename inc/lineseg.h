@@ -10,6 +10,8 @@ namespace mox {
   public:
     static void Init(v8::Local<v8::Object> namespc);
 
+    opencascade::handle<Geom_TrimmedCurve> toOCC() { return m_curveHandle; }
+
   private:
     explicit LineSegment(const gp_Pnt& from, const gp_Pnt& to);
     ~LineSegment();

@@ -2,6 +2,7 @@
 #ifndef MOX_H
 #define MOX_H
 
+#include <nan.h>
 #include "node.h"
 
 namespace mox {
@@ -14,6 +15,7 @@ namespace mox {
   using v8::Value;
 
   void doOCCMath(const FunctionCallbackInfo<Value>& args);
+  void doSomething(const FunctionCallbackInfo<Value>& args);
 
   void init(Local<Object> exports);
 }
