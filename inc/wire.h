@@ -17,6 +17,7 @@ namespace mox {
     ~Wire();
 
     static NAN_METHOD(New);
+    static NAN_METHOD(makeFace);
 
     static Nan::Persistent<v8::Function> constructor;
 

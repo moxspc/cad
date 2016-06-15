@@ -9,16 +9,17 @@ namespace mox {
   class Vertex : public Nan::ObjectWrap {
   public:
     static void Init(v8::Local<v8::Object> namespc);
-    void setOCCVertex(TopoDS_Vertex occVertex);
+    void setOCC(TopoDS_Vertex occVertex);
 
     static v8::Local<v8::Object> NewInstance();
 
   private:
-    Vertex() {}
-    explicit Vertex(const TopoDS_Vertex occVertex);
+    Vertex();
+    explicit Vertex(TopoDS_Vertex occVertex);
     ~Vertex();
 
     static NAN_METHOD(New);
+    static NAN_METHOD(toString);
 
     static Nan::Persistent<v8::Function> constructor;
 

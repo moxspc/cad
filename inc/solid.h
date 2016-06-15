@@ -22,9 +22,13 @@ namespace mox {
 
     static NAN_METHOD(New);
 
-    static NAN_METHOD(numFaces);
-    static NAN_METHOD(numEdges);
     static NAN_METHOD(numVertices);
+    static NAN_METHOD(numEdges);
+    static NAN_METHOD(numFaces);
+
+    static NAN_METHOD(eachVertex);
+    static NAN_METHOD(eachEdge);
+    static NAN_METHOD(eachFace);
 
     static Nan::Persistent<v8::Function> constructor;
 

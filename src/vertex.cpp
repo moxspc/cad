@@ -1,9 +1,16 @@
 
+#include "helper.h"
 #include "vertex.h"
+
+#include <BRep_Tool.hxx>
 
 Nan::Persistent<v8::Function> mox::Vertex::constructor;
 
-mox::Vertex::Vertex(const TopoDS_Vertex occVertex) : m_vertex(occVertex)
+mox::Vertex::Vertex()
+{
+}
+
+mox::Vertex::Vertex(TopoDS_Vertex occVertex) : m_vertex(occVertex)
 {
 }
 
@@ -11,7 +18,7 @@ mox::Vertex::~Vertex()
 {
 }
 
-void mox::Vertex::setOCCVertex(TopoDS_Vertex occVertex)
+void mox::Vertex::setOCC(TopoDS_Vertex occVertex)
 {
   m_vertex = occVertex;
 }
@@ -25,8 +32,22 @@ void mox::Vertex::Init(v8::Local<v8::Object> namespc)
   tpl->SetClassName(Nan::New("Vertex").ToLocalChecked());
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
+  Nan::SetPrototypeMethod(tpl, "toString", toString);
+
   constructor.Reset(tpl->GetFunction());
   namespc->Set(Nan::New("Vertex").ToLocalChecked(), tpl->GetFunction());
+}
+
+v8::Local<v8::Object> mox::Vertex::NewInstance()
+{
+  Nan::EscapableHandleScope scope;
+
+  const unsigned argc = 0;
+  v8::Local<v8::Value> argv[] = {};
+  v8::Local<v8::Function> cons = Nan::New<v8::Function>(constructor);
+  v8::Local<v8::Object> instance = cons->NewInstance(argc, argv);
+
+  return scope.Escape(instance);
 }
 
 NAN_METHOD(mox::Vertex::New)
@@ -43,14 +64,15 @@ NAN_METHOD(mox::Vertex::New)
   }
 }
 
-v8::Local<v8::Object> mox::Vertex::NewInstance()
+NAN_METHOD(mox::Vertex::toString)
 {
-  Nan::EscapableHandleScope scope;
-
-  const unsigned argc = 0;
-  v8::Local<v8::Value> argv[] = {};
-  v8::Local<v8::Function> cons = Nan::New<v8::Function>(constructor);
-  v8::Local<v8::Object> instance = cons->NewInstance(argc, argv);
-
-  return scope.Escape(instance);
+  mox::Vertex *vtx = ObjectWrap::Unwrap<mox::Vertex>(info.Holder());
+  std::stringstream ss;
+  if(vtx->m_vertex.IsNull()) {
+    ss << "NULL";
+  } else {
+    gp_Pnt pnt = BRep_Tool::Pnt(vtx->m_vertex);
+    ss << "[" << pnt.X() << "," << pnt.Y() << "," << pnt.Z() << "]";
+  }
+  info.GetReturnValue().Set(Nan::New(ss.str()).ToLocalChecked());
 }

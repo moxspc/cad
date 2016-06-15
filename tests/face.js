@@ -16,7 +16,7 @@ describe('Face', function() {
     var edge3 = new mox.topo.Edge(lineseg3);
     var edge4 = new mox.topo.Edge(lineseg4);
     var wire = new mox.topo.Wire(edge1, edge2, edge3, edge4);
-    var face = new mox.topo.Face(wire);
+    var face = wire.makeFace();
     assert(!!face);
   });
 });

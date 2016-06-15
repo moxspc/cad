@@ -11,12 +11,17 @@ namespace mox {
   public:
     static void Init(v8::Local<v8::Object> namespc);
     TopoDS_Face toOCC() { return m_face; }
+    void setOCC(TopoDS_Face occFace) { m_face = occFace; }
+
+    static v8::Local<v8::Object> NewInstance();
 
   private:
-    explicit Face(const TopoDS_Wire& occWire);
+    Face();
+    explicit Face(TopoDS_Face occFace);
     ~Face();
 
-    static void New(const Nan::FunctionCallbackInfo<v8::Value>& info);
+    static NAN_METHOD(New);
+    static NAN_METHOD(toString);
 
     static Nan::Persistent<v8::Function> constructor;
 

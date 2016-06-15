@@ -1,4 +1,6 @@
 
+#include <iostream>
+
 #define INIT_HELPER(name) \
   Nan::HandleScope scope; \
   v8::Local<v8::FunctionTemplate> tpl = Nan::New<v8::FunctionTemplate>(New);\
@@ -12,3 +14,9 @@
     Nan::ThrowError("Only constructor usage with new is supported"); \
     return; \
   }
+
+#define __FILENAME__ \
+  (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+
+#define MOXLOG(msg) \
+  std::cout << "[" << __FILENAME__ << ":" << __LINE__ << "]" << msg << std::endl;
