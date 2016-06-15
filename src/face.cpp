@@ -1,4 +1,5 @@
 
+#include "helper.h"
 #include "face.h"
 #include "wire.h"
 #include <BRepBuilderAPI_MakeFace.hxx>
@@ -27,13 +28,10 @@ void mox::Face::Init(v8::Local<v8::Object> namespc)
 
 NAN_METHOD(mox::Face::New)
 {
-  if(info.IsConstructCall()) {
-    mox::Wire *wire = Nan::ObjectWrap::Unwrap<mox::Wire>(info[0]->ToObject());
-    Face *obj = new Face(wire->toOCC());
-    obj->Wrap(info.This());
-    info.GetReturnValue().Set(info.This());
-  } else {
-    Nan::ThrowError("Only constructor usage with new is supported");
-    return;
-  }
+  ALLOW_ONLY_CONSTRUCTOR(info);
+
+  mox::Wire *wire = Nan::ObjectWrap::Unwrap<mox::Wire>(info[0]->ToObject());
+  Face *obj = new Face(wire->toOCC());
+  obj->Wrap(info.This());
+  info.GetReturnValue().Set(info.This());
 }

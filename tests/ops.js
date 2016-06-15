@@ -18,6 +18,10 @@ describe('Ops', function() {
     var wire = new mox.topo.Wire(edge1, edge2, edge3, edge4);
     var face = new mox.topo.Face(wire);
     var dir = new mox.geom.Vector(0,0,1);
-    mox.ops.extrude(face, dir);
+    var solid = mox.ops.extrude(face, dir);
+    assert(!!solid);
+    assert.equal(solid.numFaces(), 6);
+    assert.equal(solid.numVertices(), 8);
+    assert.equal(solid.numEdges(), 12);
   });
 });

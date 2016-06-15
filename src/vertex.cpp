@@ -53,5 +53,4 @@ v8::Local<v8::Object> mox::Vertex::NewInstance()
   v8::Local<v8::Object> instance = cons->NewInstance(argc, argv);
 
   return scope.Escape(instance);
-
 }

@@ -10,6 +10,7 @@
 #include "face.h"
 #include "wire.h"
 #include "ops.h"
+#include "solid.h"
 
 #include <gp.hxx>
 #include "gp_XYZ.hxx"
@@ -25,24 +26,23 @@ void mox::doOCCMath(const FunctionCallbackInfo<Value>& args)
 
 void mox::doSomething(const FunctionCallbackInfo<Value>& args)
 {
-  v8::Local<v8::Object> vtxObject = mox::Vertex::NewInstance();
-  mox::Vertex* vtx = Nan::ObjectWrap::Unwrap<mox::Vertex>(vtxObject);
+//  v8::Local<v8::Object> vtxObject = mox::Vertex::NewInstance();
+//  mox::Vertex* vtx = Nan::ObjectWrap::Unwrap<mox::Vertex>(vtxObject);
 }
 
 void mox::init(Local<Object> exports)
 {
-  v8::Isolate *isolate = v8::Isolate::GetCurrent();
-
-  v8::Handle<Object> geom = v8::Object::New(isolate);
+  v8::Handle<Object> geom = Nan::New<v8::Object>();
   mox::Point::Init(geom);
   mox::Vector::Init(geom);
   mox::LineSegment::Init(geom);
 
-  v8::Handle<Object> topo = v8::Object::New(isolate);
+  v8::Handle<Object> topo = Nan::New<v8::Object>();
   mox::Vertex::Init(topo);
   mox::Edge::Init(topo);
   mox::Face::Init(topo);
   mox::Wire::Init(topo);
+  mox::Solid::Init(topo);
 
   v8::Handle<Object> ops = Nan::New<v8::Object>();
   mox::ops::Init(ops);
