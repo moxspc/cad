@@ -25,6 +25,7 @@ namespace mox {
     static NAN_METHOD(numVertices);
     static NAN_METHOD(numEdges);
     static NAN_METHOD(numFaces);
+    static NAN_METHOD(numShells);
 
     static NAN_METHOD(eachVertex);
     static NAN_METHOD(eachEdge);

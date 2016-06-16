@@ -21,6 +21,7 @@ describe('Ops', function() {
     var solid = mox.ops.extrude(face, dir);
     assert(!!solid);
     assert.equal(solid.numFaces(), 6);
+    //assert.equal(solid.numShells(), 2);
     //assert.equal(solid.numVertices(), 8);
     //assert.equal(solid.numEdges(), 12);
 

@@ -20,14 +20,12 @@ mox::Solid::~Solid()
 
 void mox::Solid::Init(v8::Local<v8::Object> namespc)
 {
-  Nan::HandleScope scope;
-  v8::Local<v8::FunctionTemplate> tpl = Nan::New<v8::FunctionTemplate>(New);
-  tpl->SetClassName(Nan::New("Solid").ToLocalChecked());
-  tpl->InstanceTemplate()->SetInternalFieldCount(1);
+  DEFINE_FUNCTION_TEMPLATE("Solid", tpl);
 
   Nan::SetPrototypeMethod(tpl, "numFaces", numFaces);
   Nan::SetPrototypeMethod(tpl, "numEdges", numEdges);
   Nan::SetPrototypeMethod(tpl, "numVertices", numVertices);
+  Nan::SetPrototypeMethod(tpl, "numShells", numShells);
 
   Nan::SetPrototypeMethod(tpl, "eachVertex", eachVertex);
   Nan::SetPrototypeMethod(tpl, "eachEdge", eachEdge);
@@ -47,8 +45,8 @@ NAN_METHOD(mox::Solid::New)
 
 NAN_METHOD(mox::Solid::numFaces)
 {
-  mox::Solid* obj = ObjectWrap::Unwrap<mox::Solid>(info.Holder());
-  TopExp_Explorer exp(obj->m_solid, TopAbs_FACE);
+  GET_SELF(mox::Solid, self);
+  TopExp_Explorer exp(self->m_solid, TopAbs_FACE);
   unsigned int i=0;
   while(exp.More()) {
     i++;
@@ -59,8 +57,8 @@ NAN_METHOD(mox::Solid::numFaces)
 
 NAN_METHOD(mox::Solid::numEdges)
 {
-  mox::Solid* obj = ObjectWrap::Unwrap<mox::Solid>(info.Holder());
-  TopExp_Explorer exp(obj->m_solid, TopAbs_EDGE);
+  GET_SELF(mox::Solid, self);
+  TopExp_Explorer exp(self->m_solid, TopAbs_EDGE);
   unsigned int i=0;
   while(exp.More()) {
     i++;
@@ -71,8 +69,8 @@ NAN_METHOD(mox::Solid::numEdges)
 
 NAN_METHOD(mox::Solid::numVertices)
 {
-  mox::Solid* obj = ObjectWrap::Unwrap<mox::Solid>(info.Holder());
-  TopExp_Explorer exp(obj->m_solid, TopAbs_VERTEX);
+  GET_SELF(mox::Solid, self);
+  TopExp_Explorer exp(self->m_solid, TopAbs_VERTEX);
   unsigned int i=0;
   while(exp.More()) {
     i++;
@@ -81,14 +79,27 @@ NAN_METHOD(mox::Solid::numVertices)
   info.GetReturnValue().Set(Nan::New<v8::Uint32>(i));
 }
 
+NAN_METHOD(mox::Solid::numShells)
+{
+  GET_SELF(mox::Solid, self);
+  TopExp_Explorer exp(self->m_solid, TopAbs_SHELL);
+  unsigned int i=0;
+  while(exp.More()) {
+    i++;
+    exp.Next();
+  }
+  info.GetReturnValue().Set(Nan::New<v8::Uint32>(i));
+
+}
+
 NAN_METHOD(mox::Solid::eachVertex)
 {
   // Extract callback function
   v8::Local<v8::Function> cb = info[0].As<v8::Function>();
 
   // Iterate over vertices
-  mox::Solid* obj = ObjectWrap::Unwrap<mox::Solid>(info.Holder());
-  TopExp_Explorer exp(obj->m_solid, TopAbs_VERTEX);
+  GET_SELF(mox::Solid, self);
+  TopExp_Explorer exp(self->m_solid, TopAbs_VERTEX);
   while(exp.More()) {
     TopoDS_Vertex topoVtx = TopoDS::Vertex(exp.Current());
 
@@ -113,8 +124,8 @@ NAN_METHOD(mox::Solid::eachEdge)
   v8::Local<v8::Function> cb = info[0].As<v8::Function>();
 
   // Iterate over edges
-  mox::Solid *obj = ObjectWrap::Unwrap<mox::Solid>(info.Holder());
-  TopExp_Explorer exp(obj->m_solid, TopAbs_EDGE);
+  GET_SELF(mox::Solid, self);
+  TopExp_Explorer exp(self->m_solid, TopAbs_EDGE);
   while(exp.More()) {
     TopoDS_Edge topoEdge = TopoDS::Edge(exp.Current());
 
@@ -139,8 +150,8 @@ NAN_METHOD(mox::Solid::eachFace)
   v8::Local<v8::Function> cb = info[0].As<v8::Function>();
 
   // Iterate over faces
-  mox::Solid *obj = ObjectWrap::Unwrap<mox::Solid>(info.Holder());
-  TopExp_Explorer exp(obj->m_solid, TopAbs_FACE);
+  GET_SELF(mox::Solid, self);
+  TopExp_Explorer exp(self->m_solid, TopAbs_FACE);
   while(exp.More()) {
     TopoDS_Face topoFace = TopoDS::Face(exp.Current());
 
