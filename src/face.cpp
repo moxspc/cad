@@ -50,5 +50,27 @@ NAN_METHOD(mox::Face::New)
 
 NAN_METHOD(mox::Face::toString)
 {
-  info.GetReturnValue().Set(Nan::New("F").ToLocalChecked());
+  GET_SELF(mox::Face, self);
+  std::stringstream ss;
+  TopAbs_Orientation orientation = self->m_face.Orientation();
+  ss << " Orientation: ";
+  switch(orientation) {
+  case TopAbs_FORWARD:
+    ss << "FWD";
+    break;
+  case TopAbs_REVERSED:
+    ss << "RVS";
+    break;
+  case TopAbs_INTERNAL:
+    ss << "INT";
+    break;
+  case TopAbs_EXTERNAL:
+    ss << "EXT";
+    break;
+  default:
+    ss << "UNK";
+    break;
+  }
+
+  info.GetReturnValue().Set(Nan::New(ss.str()).ToLocalChecked());
 }

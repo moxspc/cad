@@ -61,13 +61,32 @@ NAN_METHOD(mox::Vertex::New)
 
 NAN_METHOD(mox::Vertex::toString)
 {
-  mox::Vertex *vtx = ObjectWrap::Unwrap<mox::Vertex>(info.Holder());
+  GET_SELF(mox::Vertex, self);
   std::stringstream ss;
-  if(vtx->m_vertex.IsNull()) {
+  if(self->m_vertex.IsNull()) {
     ss << "NULL";
   } else {
-    gp_Pnt pnt = BRep_Tool::Pnt(vtx->m_vertex);
+    gp_Pnt pnt = BRep_Tool::Pnt(self->m_vertex);
     ss << "[" << pnt.X() << "," << pnt.Y() << "," << pnt.Z() << "]";
+  }
+  TopAbs_Orientation orientation = self->m_vertex.Orientation();
+  ss << " Orientation: ";
+  switch(orientation) {
+  case TopAbs_FORWARD:
+    ss << "FWD";
+    break;
+  case TopAbs_REVERSED:
+    ss << "RVS";
+    break;
+  case TopAbs_INTERNAL:
+    ss << "INT";
+    break;
+  case TopAbs_EXTERNAL:
+    ss << "EXT";
+    break;
+  default:
+    ss << "UNK";
+    break;
   }
   info.GetReturnValue().Set(Nan::New(ss.str()).ToLocalChecked());
 }

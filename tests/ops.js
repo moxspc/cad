@@ -30,9 +30,9 @@ describe('Ops', function() {
     });
     solid.eachFace(function (face) {
       console.log(face.toString());
-    })
+    });
     solid.eachEdge(function (edge) {
       console.log(edge.toString());
-    })
+    });
   });
 });
