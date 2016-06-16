@@ -127,7 +127,7 @@ set(OCC_LIBS
 # -- Target
 #
 
-add_library(${PROJECT_NAME}
+add_library(${PROJECT_NAME} SHARED
   ${SRC_LIST} ${INC_LIST} ${EXTRA_LIST})
 
 target_link_libraries(${PROJECT_NAME}
