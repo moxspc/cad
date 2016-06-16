@@ -12,8 +12,11 @@
     - *x()->Number*
     - *y()->Number*
     - *z()->Number*
+  - **Vector**
+    - *constructor(x=0,y=0,z=0)*
   - **LineSegment**
-    - *static make(fromPoint, toPoint)*
+    - *static make(fromPoint, toPoint) -> LineSegment*
+    - *makeEdge() -> Edge*
   - **CircleArc**
   - **EllipseArc**
   - **BezierCurve**
@@ -23,16 +26,22 @@
   - **Vertex**
   - **Edge**
   - **Face**
-    - *static make(wire)*
   - **Wire**
     - *constructor(edges)*
     - *addEdge(edge)*
+    - *makeFace() -> Face*
   - **Shell**
   - **Solid**
+    - *numVertices() -> Number*
+    - *numEdges() -> Number*
+    - *numFaces() -> Number*
+    - *eachVertex(callback(vertex))*
+    - *eachEdge(callback(edge))*
+    - *eachFace(callback(face))*
 
 * `ops`
-  - *extrude(face)->Solid*
-  - *revolve()->Solid*
+  - *extrude(profileFace, dirVector) -> Solid*
+  - *revolve() -> Solid*
   - *fillet(solid, edges)*
   - *chamfer(solid, edges)*
 
