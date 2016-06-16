@@ -22,28 +22,21 @@ mox::LineSegment::~LineSegment()
 
 void mox::LineSegment::Init(v8::Local<v8::Object> namespc)
 {
-  Nan::HandleScope scope;
-
-  // Prepare constructor template
-  v8::Local<v8::FunctionTemplate> tpl = Nan::New<v8::FunctionTemplate>(New);
-  tpl->SetClassName(Nan::New("LineSegment").ToLocalChecked());
-  tpl->InstanceTemplate()->SetInternalFieldCount(1);
+  DEFINE_FUNCTION_TEMPLATE("LineSegment", tpl);
 
   // Prototype
   Nan::SetPrototypeMethod(tpl, "makeEdge", makeEdge);
 
   constructor.Reset(tpl->GetFunction());
   namespc->Set(Nan::New("LineSegment").ToLocalChecked(), tpl->GetFunction());
-
 }
 
 NAN_METHOD(mox::LineSegment::New)
 {
   ALLOW_ONLY_CONSTRUCTOR(info);
-  if(info.Length() != 2) {
-    Nan::ThrowError("Wrong number of arguments");
-    return;
-  }
+
+  CHECK_NUM_ARGUMENTS(info, 2);
+
   mox::Point *pntFrom = ObjectWrap::Unwrap<mox::Point>(info[0]->ToObject());
   mox::Point *pntTo = ObjectWrap::Unwrap<mox::Point>(info[1]->ToObject());
   LineSegment *obj = new LineSegment(pntFrom->toOCC(), pntTo->toOCC());

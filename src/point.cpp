@@ -1,4 +1,5 @@
 
+#include "helper.h"
 #include "point.h"
 #include <iostream>
 
@@ -14,18 +15,12 @@ mox::Point::~Point()
 
 void mox::Point::Init(v8::Local<v8::Object> namespc)
 {
-  Nan::HandleScope scope;
-
-  // Prepare constructor template
-  v8::Local<v8::FunctionTemplate> tpl = Nan::New<v8::FunctionTemplate>(New);
-  tpl->SetClassName(Nan::New("Point").ToLocalChecked());
-  tpl->InstanceTemplate()->SetInternalFieldCount(1);
+  DEFINE_FUNCTION_TEMPLATE("Point", tpl);
 
   // Prototype
   Nan::SetPrototypeMethod(tpl, "x", GetX);
   Nan::SetPrototypeMethod(tpl, "y", GetY);
   Nan::SetPrototypeMethod(tpl, "z", GetZ);
-
   Nan::SetPrototypeMethod(tpl, "set", SetXYZ);
 
   constructor.Reset(tpl->GetFunction());
@@ -33,32 +28,22 @@ void mox::Point::Init(v8::Local<v8::Object> namespc)
 }
 
 void mox::Point::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
-  if (info.IsConstructCall()) {
-    // Invoked as constructor: `new Point(...)`
-    double x=0,y=0,z=0;
-    if(info.Length() == 1) {
-      x = info[0]->NumberValue();
-    } else if(info.Length() == 2) {
-      x = info[0]->NumberValue();
-      y = info[1]->NumberValue();
-    } else if(info.Length() >= 3) {
-      x = info[0]->NumberValue();
-      y = info[1]->NumberValue();
-      z = info[2]->NumberValue();
-    }
-    Point* obj = new Point(x,y,z);
-    obj->Wrap(info.This());
-    info.GetReturnValue().Set(info.This());
-  } else {
-    // Invoked as plain function `Point(...)`, turn into construct call.
-    const int argc = info.Length();
-    v8::Local<v8::Value> argv[3];
-    for(int i=0; i<argc; i++) {
-      argv[i] = info[i];
-    }
-    v8::Local<v8::Function> cons = Nan::New<v8::Function>(constructor);
-    info.GetReturnValue().Set(cons->NewInstance(argc, argv));
+  ALLOW_ONLY_CONSTRUCTOR(info);
+
+  double x=0,y=0,z=0;
+  if(info.Length() == 1) {
+    x = info[0]->NumberValue();
+  } else if(info.Length() == 2) {
+    x = info[0]->NumberValue();
+    y = info[1]->NumberValue();
+  } else if(info.Length() >= 3) {
+    x = info[0]->NumberValue();
+    y = info[1]->NumberValue();
+    z = info[2]->NumberValue();
   }
+  Point* obj = new Point(x,y,z);
+  obj->Wrap(info.This());
+  info.GetReturnValue().Set(info.This());
 }
 
 void mox::Point::GetX(const Nan::FunctionCallbackInfo<v8::Value>& info) {

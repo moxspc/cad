@@ -24,12 +24,7 @@ void mox::Edge::setOCC(TopoDS_Edge occEdge)
 
 void mox::Edge::Init(v8::Local<v8::Object> namespc)
 {
-  Nan::HandleScope scope;
-
-  // Prepare constructor template
-  v8::Local<v8::FunctionTemplate> tpl = Nan::New<v8::FunctionTemplate>(New);
-  tpl->SetClassName(Nan::New("Edge").ToLocalChecked());
-  tpl->InstanceTemplate()->SetInternalFieldCount(1);
+  DEFINE_FUNCTION_TEMPLATE("Edge", tpl);
 
   Nan::SetPrototypeMethod(tpl, "toString", toString);
 

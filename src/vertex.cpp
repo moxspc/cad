@@ -25,12 +25,7 @@ void mox::Vertex::setOCC(TopoDS_Vertex occVertex)
 
 void mox::Vertex::Init(v8::Local<v8::Object> namespc)
 {
-  Nan::HandleScope scope;
-
-  // Prepare constructor template
-  v8::Local<v8::FunctionTemplate> tpl = Nan::New<v8::FunctionTemplate>(New);
-  tpl->SetClassName(Nan::New("Vertex").ToLocalChecked());
-  tpl->InstanceTemplate()->SetInternalFieldCount(1);
+  DEFINE_FUNCTION_TEMPLATE("Vertex", tpl);
 
   Nan::SetPrototypeMethod(tpl, "toString", toString);
 

@@ -14,12 +14,7 @@ mox::Vector::~Vector()
 
 void mox::Vector::Init(v8::Local<v8::Object> namespc)
 {
-  Nan::HandleScope scope;
-
-  // Prepare constructor template
-  v8::Local<v8::FunctionTemplate> tpl = Nan::New<v8::FunctionTemplate>(New);
-  tpl->SetClassName(Nan::New("Vector").ToLocalChecked());
-  tpl->InstanceTemplate()->SetInternalFieldCount(1);
+  DEFINE_FUNCTION_TEMPLATE("Vector", tpl);
 
   constructor.Reset(tpl->GetFunction());
   namespc->Set(Nan::New("Vector").ToLocalChecked(), tpl->GetFunction());

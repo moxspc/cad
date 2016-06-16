@@ -19,10 +19,7 @@ mox::Face::~Face()
 
 void mox::Face::Init(v8::Local<v8::Object> namespc)
 {
-  Nan::HandleScope scope;
-  v8::Local<v8::FunctionTemplate> tpl = Nan::New<v8::FunctionTemplate>(New);
-  tpl->SetClassName(Nan::New("Face").ToLocalChecked());
-  tpl->InstanceTemplate()->SetInternalFieldCount(1);
+  DEFINE_FUNCTION_TEMPLATE("Face", tpl);
 
   Nan::SetPrototypeMethod(tpl, "toString", toString);
 

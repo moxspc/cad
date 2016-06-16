@@ -15,18 +15,6 @@ describe('Point', function() {
     assert.equal(point.y(), 4.509);
     assert.equal(point.z(), 90);
   });
-  it('Empty Function', function () {
-    var point = mox.geom.Point();
-    assert.equal(point.x(), 0);
-    assert.equal(point.y(), 0);
-    assert.equal(point.z(), 0);
-  });
-  it('Function', function () {
-    var point = mox.geom.Point(22.3,4.509,90);
-    assert.equal(point.x(), 22.3);
-    assert.equal(point.y(), 4.509);
-    assert.equal(point.z(), 90);
-  });
   it('Set', function () {
     var point = new mox.geom.Point();
     point.set(9,3,5);

@@ -22,10 +22,7 @@ mox::Wire::~Wire()
 
 void mox::Wire::Init(v8::Local<v8::Object> namespc)
 {
-  Nan::HandleScope scope;
-  v8::Local<v8::FunctionTemplate> tpl = Nan::New<v8::FunctionTemplate>(New);
-  tpl->SetClassName(Nan::New("Wire").ToLocalChecked());
-  tpl->InstanceTemplate()->SetInternalFieldCount(1);
+  DEFINE_FUNCTION_TEMPLATE("Wire", tpl);
 
   Nan::SetPrototypeMethod(tpl, "makeFace", makeFace);
 
