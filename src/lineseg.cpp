@@ -1,8 +1,13 @@
 
+#include "helper.h"
 #include "lineseg.h"
 #include "point.h"
+#include "edge.h"
 
 #include <GC_MakeSegment.hxx>
+#include <TopoDS_Edge.hxx>
+#include <BRepBuilderAPI_MakeEdge.hxx>
+
 
 Nan::Persistent<v8::Function> mox::LineSegment::constructor;
 
@@ -25,30 +30,37 @@ void mox::LineSegment::Init(v8::Local<v8::Object> namespc)
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
   // Prototype
-  //Nan::SetPrototypeMethod(tpl, "set", SetXYZ);
+  Nan::SetPrototypeMethod(tpl, "makeEdge", makeEdge);
 
   constructor.Reset(tpl->GetFunction());
   namespc->Set(Nan::New("LineSegment").ToLocalChecked(), tpl->GetFunction());
 
 }
 
-void mox::LineSegment::New(const Nan::FunctionCallbackInfo<v8::Value> &info)
+NAN_METHOD(mox::LineSegment::New)
 {
+  ALLOW_ONLY_CONSTRUCTOR(info);
   if(info.Length() != 2) {
     Nan::ThrowError("Wrong number of arguments");
     return;
   }
-  if(info.IsConstructCall()) {
-    mox::Point *pntFrom = Nan::ObjectWrap::Unwrap<mox::Point>(info[0]->ToObject());
-    mox::Point *pntTo = Nan::ObjectWrap::Unwrap<mox::Point>(info[1]->ToObject());
-    LineSegment *obj = new LineSegment(pntFrom->toOCC(), pntTo->toOCC());
-    obj->Wrap(info.This());
-    info.GetReturnValue().Set(info.This());
-  } else {
-    const int argc = 2;
-    v8::Local<v8::Value> argv[2] = { info[0], info[1] };
-    v8::Local<v8::Function> cons = Nan::New<v8::Function>(constructor);
-    info.GetReturnValue().Set(cons->NewInstance(argc, argv));
-  }
+  mox::Point *pntFrom = ObjectWrap::Unwrap<mox::Point>(info[0]->ToObject());
+  mox::Point *pntTo = ObjectWrap::Unwrap<mox::Point>(info[1]->ToObject());
+  LineSegment *obj = new LineSegment(pntFrom->toOCC(), pntTo->toOCC());
+  obj->Wrap(info.This());
+  info.GetReturnValue().Set(info.This());
 }
 
+NAN_METHOD(mox::LineSegment::makeEdge)
+{
+  GET_SELF(mox::LineSegment, self);
+
+  TopoDS_Edge topoEdge = BRepBuilderAPI_MakeEdge(self->toOCC());
+
+  // Package the edge in Javascript object
+  v8::Local<v8::Object> edgeInstance = mox::Edge::NewInstance();
+  mox::Edge *edge = ObjectWrap::Unwrap<mox::Edge>(edgeInstance);
+  edge->setOCC(topoEdge);
+
+  info.GetReturnValue().Set(edgeInstance);
+}

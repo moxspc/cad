@@ -12,7 +12,7 @@ namespace mox {
     static void Init(v8::Local<v8::Object> namespc);
 
     TopoDS_Edge toOCC() { return m_edge; }
-    void setOCC(TopoDS_Edge occEdge) { m_edge = occEdge; }
+    void setOCC(TopoDS_Edge occEdge);
 
     static v8::Local<v8::Object> NewInstance();
 

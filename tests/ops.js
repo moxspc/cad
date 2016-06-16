@@ -11,10 +11,10 @@ describe('Ops', function() {
     var lineseg2 = new mox.geom.LineSegment(point2, point3);
     var lineseg3 = new mox.geom.LineSegment(point3, point4);
     var lineseg4 = new mox.geom.LineSegment(point4, point1);
-    var edge1 = new mox.topo.Edge(lineseg1);
-    var edge2 = new mox.topo.Edge(lineseg2);
-    var edge3 = new mox.topo.Edge(lineseg3);
-    var edge4 = new mox.topo.Edge(lineseg4);
+    var edge1 = lineseg1.makeEdge();
+    var edge2 = lineseg2.makeEdge();
+    var edge3 = lineseg3.makeEdge();
+    var edge4 = lineseg4.makeEdge();
     var wire = new mox.topo.Wire(edge1, edge2, edge3, edge4);
     var face = wire.makeFace();
     var dir = new mox.geom.Vector(0,0,1);

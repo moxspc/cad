@@ -7,7 +7,7 @@ describe('Edge', function() {
     var point1 = new mox.geom.Point(0,0,0);
     var point2 = new mox.geom.Point(1,0,0);
     var lineseg = new mox.geom.LineSegment(point1, point2);
-    var edge = new mox.topo.Edge(lineseg);
+    var edge = lineseg.makeEdge();
     assert(!!edge);
   });
 });

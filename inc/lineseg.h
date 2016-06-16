@@ -16,7 +16,9 @@ namespace mox {
     explicit LineSegment(const gp_Pnt& from, const gp_Pnt& to);
     ~LineSegment();
 
-    static void New(const Nan::FunctionCallbackInfo<v8::Value>& info);
+    static NAN_METHOD(New);
+    static NAN_METHOD(makeEdge);
+
     static Nan::Persistent<v8::Function> constructor;
 
     opencascade::handle<Geom_TrimmedCurve> m_curveHandle;

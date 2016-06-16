@@ -49,8 +49,8 @@ NAN_METHOD(mox::Wire::New)
 
 NAN_METHOD(mox::Wire::makeFace)
 {
-  mox::Wire *wire = ObjectWrap::Unwrap<mox::Wire>(info.Holder());
-  TopoDS_Face topoFace = BRepBuilderAPI_MakeFace(wire->toOCC());
+  GET_SELF(mox::Wire, self);
+  TopoDS_Face topoFace = BRepBuilderAPI_MakeFace(self->toOCC());
 
   // Packacge the face in a Javascript Face object
   v8::Local<v8::Object> faceInstance = mox::Face::NewInstance();

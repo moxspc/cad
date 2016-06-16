@@ -46,8 +46,6 @@ NAN_METHOD(mox::Face::New)
 {
   ALLOW_ONLY_CONSTRUCTOR(info);
 
-  //mox::Wire *wire = Nan::ObjectWrap::Unwrap<mox::Wire>(info[0]->ToObject());
-  //Face *obj = new Face(wire->toOCC());
   Face *obj = new Face();
   obj->Wrap(info.This());
   info.GetReturnValue().Set(info.This());

@@ -15,6 +15,9 @@
     return; \
   }
 
+#define GET_SELF(type, var) \
+  type *var = ObjectWrap::Unwrap<type>(info.Holder());
+
 #define __FILENAME__ \
   (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
