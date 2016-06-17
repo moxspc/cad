@@ -38,6 +38,7 @@
     - *eachVertex(callback(vertex))*
     - *eachEdge(callback(edge))*
     - *eachFace(callback(face))*
+    - *tessellate(params) -> BufferMesh*
 
 * `ops`
   - *extrude(profileFace, dirVector) -> Solid*
@@ -45,4 +46,6 @@
   - *fillet(solid, edges)*
   - *chamfer(solid, edges)*
 
+* `tess`
+  - **BufferMesh**
 

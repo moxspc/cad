@@ -11,6 +11,7 @@
 #include "wire.h"
 #include "ops.h"
 #include "solid.h"
+#include "buffermesh.h"
 
 #include <gp.hxx>
 #include "gp_XYZ.hxx"
@@ -47,9 +48,13 @@ void mox::init(Local<Object> exports)
   v8::Handle<Object> ops = Nan::New<v8::Object>();
   mox::ops::Init(ops);
 
+  v8::Handle<Object> tess = Nan::New<v8::Object>();
+  mox::BufferMesh::Init(tess);
+
   exports->Set(Nan::New("geom").ToLocalChecked(), geom);
   exports->Set(Nan::New("topo").ToLocalChecked(), topo);
   exports->Set(Nan::New("ops").ToLocalChecked(), ops);
+  exports->Set(Nan::New("tess").ToLocalChecked(), tess);
 
   NODE_SET_METHOD(exports, "doOCCMath", doOCCMath);
   NODE_SET_METHOD(exports, "doSomething", doSomething);

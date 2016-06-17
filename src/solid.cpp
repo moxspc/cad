@@ -4,6 +4,7 @@
 #include "vertex.h"
 #include "edge.h"
 #include "face.h"
+#include "buffermesh.h"
 
 #include <TopoDS.hxx>
 #include <TopExp_Explorer.hxx>
@@ -30,6 +31,8 @@ void mox::Solid::Init(v8::Local<v8::Object> namespc)
   Nan::SetPrototypeMethod(tpl, "eachVertex", eachVertex);
   Nan::SetPrototypeMethod(tpl, "eachEdge", eachEdge);
   Nan::SetPrototypeMethod(tpl, "eachFace", eachFace);
+
+  Nan::SetPrototypeMethod(tpl, "tessellate", tessellate);
 
   constructor.Reset(tpl->GetFunction());
   namespc->Set(Nan::New("Solid").ToLocalChecked(), tpl->GetFunction());
@@ -168,6 +171,22 @@ NAN_METHOD(mox::Solid::eachFace)
     exp.Next();
   }
   info.GetReturnValue().Set(info.This());
+}
+
+NAN_METHOD(mox::Solid::tessellate)
+{
+  v8::Local<v8::Object> bufferMeshHdl = mox::BufferMesh::NewInstance();
+  mox::BufferMesh *bufferMesh =
+    ObjectWrap::Unwrap<mox::BufferMesh>(bufferMeshHdl);
+
+  GET_SELF(mox::Solid, self);
+  TopExp_Explorer exp(self->m_solid, TopAbs_FACE);
+  while(exp.More()) {
+    TopoDS_Face topoFace = TopoDS::Face(exp.Current());
+    bufferMesh->addFace(topoFace);
+    exp.Next();
+  }
+  info.GetReturnValue().Set(bufferMeshHdl);
 }
 
 v8::Local<v8::Object> mox::Solid::NewInstance()

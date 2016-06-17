@@ -31,6 +31,8 @@ namespace mox {
     static NAN_METHOD(eachEdge);
     static NAN_METHOD(eachFace);
 
+    static NAN_METHOD(tessellate);
+
     static Nan::Persistent<v8::Function> constructor;
 
     TopoDS_Shape m_solid;
