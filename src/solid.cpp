@@ -64,7 +64,10 @@ NAN_METHOD(mox::Solid::numEdges)
   TopExp_Explorer exp(self->m_solid, TopAbs_EDGE);
   unsigned int i=0;
   while(exp.More()) {
-    i++;
+    TopoDS_Edge topoEdge = TopoDS::Edge(exp.Current());
+    if(topoEdge.Orientation() == TopAbs_FORWARD) {
+      i++;
+    }
     exp.Next();
   }
   info.GetReturnValue().Set(Nan::New<v8::Uint32>(i));
@@ -132,15 +135,17 @@ NAN_METHOD(mox::Solid::eachEdge)
   while(exp.More()) {
     TopoDS_Edge topoEdge = TopoDS::Edge(exp.Current());
 
-    // Package the edge into Javascript object and invoke callback with it
-    v8::Local<v8::Object> edgeInstance = mox::Edge::NewInstance();
-    mox::Edge *edge = ObjectWrap::Unwrap<mox::Edge>(edgeInstance);
-    edge->setOCC(topoEdge);
+    if(topoEdge.Orientation() == TopAbs_FORWARD) {
+      // Package the edge into Javascript object and invoke callback with it
+      v8::Local<v8::Object> edgeInstance = mox::Edge::NewInstance();
+      mox::Edge *edge = ObjectWrap::Unwrap<mox::Edge>(edgeInstance);
+      edge->setOCC(topoEdge);
 
-    // Invoke callback
-    const unsigned int argc = 1;
-    v8::Local<v8::Value> argv[] = { edgeInstance };
-    Nan::MakeCallback(Nan::GetCurrentContext()->Global(), cb, argc, argv);
+      // Invoke callback
+      const unsigned int argc = 1;
+      v8::Local<v8::Value> argv[] = { edgeInstance };
+      Nan::MakeCallback(Nan::GetCurrentContext()->Global(), cb, argc, argv);
+    }
 
     exp.Next();
   }
