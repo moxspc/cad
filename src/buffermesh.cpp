@@ -44,8 +44,8 @@ v8::Local<v8::Object> mox::BufferMesh::NewInstance()
 {
   Nan::EscapableHandleScope scope;
 
-  const unsigned argc = 0;
-  v8::Local<v8::Value> argv[] = {};
+  const unsigned argc = 1;
+  v8::Local<v8::Value> argv[1] = {Nan::New("xxx").ToLocalChecked()};
   v8::Local<v8::Function> cons = Nan::New<v8::Function>(constructor);
   v8::Local<v8::Object> instance = cons->NewInstance(argc, argv);
 

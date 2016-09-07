@@ -37,8 +37,8 @@ v8::Local<v8::Object> mox::Vertex::NewInstance()
 {
   Nan::EscapableHandleScope scope;
 
-  const unsigned argc = 0;
-  v8::Local<v8::Value> argv[] = {};
+  const unsigned argc = 1;
+  v8::Local<v8::Value> argv[1] = {Nan::New("xxx").ToLocalChecked()};
   v8::Local<v8::Function> cons = Nan::New<v8::Function>(constructor);
   v8::Local<v8::Object> instance = cons->NewInstance(argc, argv);
 
@@ -52,8 +52,8 @@ NAN_METHOD(mox::Vertex::New)
     obj->Wrap(info.This());
     info.GetReturnValue().Set(info.This());
   } else {
-    const int argc = 0;
-    v8::Local<v8::Value> argv[] = {};
+    const unsigned argc = 1;
+    v8::Local<v8::Value> argv[1] = {Nan::New("xxx").ToLocalChecked()};
     v8::Local<v8::Function> cons = Nan::New<v8::Function>(constructor);
     info.GetReturnValue().Set(cons->NewInstance(argc,argv));
   }

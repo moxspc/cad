@@ -24,7 +24,6 @@
   },
   "homepage": "https://github.com/moxspc/mox#readme",
   "dependencies": {
-    "cmake-js": "^3.2.1",
-    "nan": "^2.3.5"
+    "nan": "^2.4.0"
   }
 }
