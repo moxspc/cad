@@ -11,7 +11,20 @@
         "<!@(node -e \"console.log(require('fs').readdirSync('./src').map(f=>'src/'+f).join(' '))\")",
         "<!@(node -e \"console.log(require('fs').readdirSync('./inc').map(f=>'inc/'+f).join(' '))\")"
       ],
-      "cflags": ['-fPIC', '-std=c++0x','-stdlib=libc++', '-Wall'],
+      "conditions" : [
+        [
+          "OS='win'",
+          {
+            "cflags": ['-fPIC', '-std=c++0x', '-stdlib=libc++', '-Wall'],
+          }
+        ],
+        [
+          "OS='linux'",
+          {
+            "cflags": ['-fPIC', '-std=c++0x', '-Wall'],
+          }
+        ]
+      ],
       "cflags_cc!": ['-fno-rtti', '-fno-exceptions' ],
       "xcode_settings" : {
         'OTHER_CPLUSPLUSFLAGS' : ['-std=c++11','-stdlib=libc++', '-v'],
@@ -25,6 +38,13 @@
           {
             "variables" : {
               'LIB_DIR' : '<(OCC_ROOT)/win64/vc12/lib'
+            }
+          }
+        ],
+        [ "OS=='linux'",
+          {
+            "variables" : {
+              'LIB_DIR' : '<(OCC_ROOT)/lib'
             }
           }
         ]
@@ -93,68 +113,30 @@
                 '<(LIB_DIR)/TKXmlXCAF',
                 '<(LIB_DIR)/TKernel'
               ]
-            },
+            }
+          ],
+          [
+            "OS=='linux'",
             {
               "libraries": [
-                '-L<(OCC_ROOT)/lib',
-                '-Wl,-rpath,<(OCC_ROOT)/lib',
-                '-lFWOSPlugin',
-                '-lTKBO',
-                '-lTKBRep',
-                '-lTKBin',
-                '-lTKBinL',
-                '-lTKBinTObj',
-                '-lTKBinXCAF',
-                '-lTKBool',
-                '-lTKCAF',
-                '-lTKCDF',
-                '-lTKDCAF',
-                '-lTKDraw',
-                '-lTKFeat',
-                '-lTKFillet',
-                '-lTKG2d',
-                '-lTKG3d',
-                '-lTKGeomAlgo',
-                '-lTKGeomBase',
-                '-lTKHLR',
-                '-lTKIGES',
-                '-lTKLCAF',
-                '-lTKMath',
-                '-lTKMesh',
-                '-lTKMeshVS',
-                '-lTKOffset',
-                '-lTKOpenGl',
-                '-lTKPrim',
-                '-lTKQADraw',
-                '-lTKSTEP',
-                '-lTKSTEP209',
-                '-lTKSTEPAttr',
-                '-lTKSTEPBase',
-                '-lTKSTL',
-                '-lTKService',
-                '-lTKShHealing',
-                '-lTKStd',
-                '-lTKStdL',
-                '-lTKTObj',
-                '-lTKTObjDRAW',
-                '-lTKTopAlgo',
-                '-lTKTopTest',
-                '-lTKV3d',
-                '-lTKVCAF',
-                '-lTKVRML',
-                '-lTKViewerTest',
-                '-lTKXCAF',
-                '-lTKXDEDRAW',
-                '-lTKXDEIGES',
-                '-lTKXDESTEP',
-                '-lTKXMesh',
-                '-lTKXSBase',
-                '-lTKXSDRAW',
-                '-lTKXml',
-                '-lTKXmlL',
-                '-lTKXmlTObj',
-                '-lTKXmlXCAF',
-                '-lTKernel'
+                '-Wl,--start-group',
+                '<(LIB_DIR)/libTKBO.a',
+                '<(LIB_DIR)/libTKBRep.a',
+                '<(LIB_DIR)/libTKBool.a',
+                '<(LIB_DIR)/libTKFeat.a',
+                '<(LIB_DIR)/libTKFillet.a',
+                '<(LIB_DIR)/libTKG2d.a',
+                '<(LIB_DIR)/libTKG3d.a',
+                '<(LIB_DIR)/libTKGeomAlgo.a',
+                '<(LIB_DIR)/libTKGeomBase.a',
+                '<(LIB_DIR)/libTKHLR.a',
+                '<(LIB_DIR)/libTKMath.a',
+                '<(LIB_DIR)/libTKMesh.a',
+                '<(LIB_DIR)/libTKOffset.a',
+                '<(LIB_DIR)/libTKPrim.a',
+                '<(LIB_DIR)/libTKTopAlgo.a',
+                '<(LIB_DIR)/libTKernel.a',
+                '-Wl,--end-group'
               ]
             }
           ]

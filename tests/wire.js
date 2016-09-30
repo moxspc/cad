@@ -1,5 +1,5 @@
 var assert = require('assert');
-var mox = require(process.env.HOME+'/moxspc/mox/build/Release/mox');
+var mox = require('../build/Debug/mox');
 
 describe('Wire', function() {
   it('Constructor', function () {
