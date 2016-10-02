@@ -9,13 +9,13 @@ if(OCC_ROOT-NOTFOUND)
   message(SEND_ERROR "OCC_ROOT is not defined")
 endif()
 
-set(OCC_INC_DIR "${OCC_ROOT}/include/opencascade")
+set(OCC_INC_DIR "${OCC_ROOT}/inc")
 set(OCC_LIB_DIR "${OCC_ROOT}/lib")
 
 #
 # -- Check dependencies
 #
-find_path(NODE_INC_DIR node_buffer.h HINTS /usr/local/include/node)
+find_path(NODE_INC_DIR node_buffer.h HINTS /usr/include/node)
 
 if(NODE_INC_DIR-NOTFOUND)
   message(SEND_ERROR "Node.js header files not found")                                                                          
@@ -64,63 +64,22 @@ file(GLOB_RECURSE EXTRA_LIST
 )
 
 set(OCC_LIBS
-  FWOSPlugin
-  TKBO
-  TKBRep
-  TKBin
-  TKBinL
-  TKBinTObj
-  TKBinXCAF
-  TKBool
-  TKCAF
-  TKCDF
-  TKDCAF
-  TKDraw
-  TKFeat
-  TKFillet
-  TKG2d
-  TKG3d
-  TKGeomAlgo
-  TKGeomBase
-  TKHLR
-  TKIGES
-  TKLCAF
-  TKMath
-  TKMesh
-  TKMeshVS
-  TKOffset
-  TKOpenGl
-  TKPrim
-  TKQADraw
-  TKSTEP
-  TKSTEP209
-  TKSTEPAttr
-  TKSTEPBase
-  TKSTL
-  TKService
-  TKShHealing
-  TKStd
-  TKStdL
-  TKTObj
-  TKTObjDRAW
-  TKTopAlgo
-  TKTopTest
-  TKV3d
-  TKVCAF
-  TKVRML
-  TKViewerTest
-  TKXCAF
-  TKXDEDRAW
-  TKXDEIGES
-  TKXDESTEP
-  TKXMesh
-  TKXSBase
-  TKXSDRAW
-  TKXml
-  TKXmlL
-  TKXmlTObj
-  TKXmlXCAF
-  TKernel
+  ${OCC_LIB_DIR}/libTKBO.a
+  ${OCC_LIB_DIR}/libTKBRep.a
+  ${OCC_LIB_DIR}/libTKBool.a
+  ${OCC_LIB_DIR}/libTKFeat.a
+  ${OCC_LIB_DIR}/libTKFillet.a
+  ${OCC_LIB_DIR}/libTKG2d.a
+  ${OCC_LIB_DIR}/libTKG3d.a
+  ${OCC_LIB_DIR}/libTKGeomAlgo.a
+  ${OCC_LIB_DIR}/libTKGeomBase.a
+  ${OCC_LIB_DIR}/libTKHLR.a
+  ${OCC_LIB_DIR}/libTKMath.a
+  ${OCC_LIB_DIR}/libTKMesh.a
+  ${OCC_LIB_DIR}/libTKOffset.a
+  ${OCC_LIB_DIR}/libTKPrim.a
+  ${OCC_LIB_DIR}/libTKTopAlgo.a
+  ${OCC_LIB_DIR}/libTKernel.a
 )
 
 #

@@ -9,6 +9,10 @@
 #include <TopoDS.hxx>
 #include <TopExp_Explorer.hxx>
 
+#include <BRepMesh_IncrementalMesh.hxx>
+#include <Poly_Array1OfTriangle.hxx>
+#include <TColgp_Array1OfPnt.hxx>
+
 Nan::Persistent<v8::Function> mox::Solid::constructor;
 
 mox::Solid::Solid()
@@ -185,9 +189,31 @@ NAN_METHOD(mox::Solid::tessellate)
     ObjectWrap::Unwrap<mox::BufferMesh>(bufferMeshHdl);
 
   GET_SELF(mox::Solid, self);
+
+  const Standard_Real aLinearDeflection   = 0.01;
+  const Standard_Real anAngularDeflection = 0.5;
+
   TopExp_Explorer exp(self->m_solid, TopAbs_FACE);
   while(exp.More()) {
     TopoDS_Face topoFace = TopoDS::Face(exp.Current());
+    BRepMesh_IncrementalMesh aMesh(topoFace, aLinearDeflection, Standard_False, anAngularDeflection);
+    aMesh.Perform();
+    TopLoc_Location l;
+    const Handle(Poly_Triangulation)& pt = BRep_Tool::Triangulation(topoFace, l);
+    MOXLOG("Num Triangles " << (pt.IsNull() ? 0 : pt->NbTriangles()));
+    const Poly_Array1OfTriangle& polyarr = pt->Triangles();
+
+    for(Standard_Integer i=polyarr.Lower(); i<=polyarr.Upper(); i++) {
+      const Poly_Triangle& ptri = polyarr.Value(i);
+      MOXLOG("Indices " << ptri.Value(1) << "," << ptri.Value(2) << "," << ptri.Value(3));
+    }
+
+    const TColgp_Array1OfPnt& nodes = pt->Nodes();
+    for(Standard_Integer i=nodes.Lower(); i<=nodes.Upper(); i++) {
+      const gp_Pnt& pnt = nodes.Value(i);
+      MOXLOG(i << " [" << pnt.X() << "," << pnt.Y() << "," << pnt.Z() << "]");
+    }
+
     bufferMesh->addFace(topoFace);
     exp.Next();
   }
