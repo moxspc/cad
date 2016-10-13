@@ -200,18 +200,18 @@ NAN_METHOD(mox::Solid::tessellate)
     aMesh.Perform();
     TopLoc_Location l;
     const Handle(Poly_Triangulation)& pt = BRep_Tool::Triangulation(topoFace, l);
-    MOXLOG("Num Triangles " << (pt.IsNull() ? 0 : pt->NbTriangles()));
+    //MOXLOG("Num Triangles " << (pt.IsNull() ? 0 : pt->NbTriangles()));
     const Poly_Array1OfTriangle& polyarr = pt->Triangles();
 
     for(Standard_Integer i=polyarr.Lower(); i<=polyarr.Upper(); i++) {
       const Poly_Triangle& ptri = polyarr.Value(i);
-      MOXLOG("Indices " << ptri.Value(1) << "," << ptri.Value(2) << "," << ptri.Value(3));
+      //MOXLOG("Indices " << ptri.Value(1) << "," << ptri.Value(2) << "," << ptri.Value(3));
     }
 
     const TColgp_Array1OfPnt& nodes = pt->Nodes();
     for(Standard_Integer i=nodes.Lower(); i<=nodes.Upper(); i++) {
       const gp_Pnt& pnt = nodes.Value(i);
-      MOXLOG(i << " [" << pnt.X() << "," << pnt.Y() << "," << pnt.Z() << "]");
+      //MOXLOG(i << " [" << pnt.X() << "," << pnt.Y() << "," << pnt.Z() << "]");
     }
 
     bufferMesh->addFace(topoFace);

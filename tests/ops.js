@@ -35,10 +35,12 @@ describe('Ops', function() {
     });
     */
 
+    /*
     console.log('numEdges',solid.numEdges());
     solid.eachEdge(function (edge) {
       console.log(edge.toString());
     });
+    */
 
   });
   it('extrude2', function () {
@@ -77,10 +79,12 @@ describe('Ops', function() {
     });
     */
 
+      /*
     console.log('numEdges',solid.numEdges());
     solid.eachEdge(function (edge) {
       console.log(edge.toString());
     });
+    */
 
   });
 });
