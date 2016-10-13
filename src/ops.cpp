@@ -44,7 +44,6 @@ void mox::ops::extrude(const v8::FunctionCallbackInfo<v8::Value>& info)
 
 void mox::ops::approximate2d(const v8::FunctionCallbackInfo<v8::Value>& info)
 {
-  v8::Isolate *isolate = info.GetIsolate();
   uint nPoints = info.Length();
   TColgp_Array1OfPnt2d arrPoints(1, nPoints);
   for(uint i=0; i<nPoints; i++) {
@@ -57,18 +56,16 @@ void mox::ops::approximate2d(const v8::FunctionCallbackInfo<v8::Value>& info)
 
   Geom2dConvert_BSplineCurveToBezierCurve convapi(api.Curve());
 
-  v8::Local<v8::Array> bezArray =
-          v8::Array::New(v8::Isolate::GetCurrent(), convapi.NbArcs());
+  v8::Local<v8::Array> bezArray = Nan::New<v8::Array>(convapi.NbArcs());
 
   for(uint i=1; i<=convapi.NbArcs(); i++) {
     assert(convapi.Arc(i)->Degree() == 3);
-    v8::Local<v8::Array> cpointsArray =
-          v8::Array::New(v8::Isolate::GetCurrent(), 4);
+    v8::Local<v8::Array> cpointsArray = Nan::New<v8::Array>(4);
     for(uint j=1; j<=convapi.Arc(i)->NbPoles(); j++) {
-      v8::Local<v8::Array> cpoint = v8::Array::New(isolate, 2);
+      v8::Local<v8::Array> cpoint = Nan::New<v8::Array>(2);
       gp_Pnt2d pole = convapi.Arc(i)->Pole(j);
-      cpoint->Set(0, v8::Number::New(isolate, pole.X()));
-      cpoint->Set(1, v8::Number::New(isolate, pole.Y()));
+      cpoint->Set(0, Nan::New<v8::Number>(pole.X()));
+      cpoint->Set(1, Nan::New<v8::Number>(pole.Y()));
 
       cpointsArray->Set(j-1, cpoint);
     }
