@@ -5,7 +5,7 @@
 #include <gp_Pnt.hxx>
 #include <Geom_TrimmedCurve.hxx>
 
-namespace mox {
+namespace moxcad {
   class LineSegment : public Nan::ObjectWrap {
   public:
     static void Init(v8::Local<v8::Object> namespc);

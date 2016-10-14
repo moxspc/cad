@@ -5,7 +5,7 @@
 #include <nan.h>
 #include <TopoDS_Solid.hxx>
 
-namespace mox {
+namespace moxcad {
 
   class Solid : public Nan::ObjectWrap {
   public:

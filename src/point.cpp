@@ -3,17 +3,17 @@
 #include "point.h"
 #include <iostream>
 
-Nan::Persistent<v8::Function> mox::Point::constructor;
+Nan::Persistent<v8::Function> moxcad::Point::constructor;
 
-mox::Point::Point(double x, double y, double z) : m_point(x,y,z)
+moxcad::Point::Point(double x, double y, double z) : m_point(x,y,z)
 {
 }
 
-mox::Point::~Point()
+moxcad::Point::~Point()
 {
 }
 
-void mox::Point::Init(v8::Local<v8::Object> namespc)
+void moxcad::Point::Init(v8::Local<v8::Object> namespc)
 {
   DEFINE_FUNCTION_TEMPLATE("Point", tpl);
 
@@ -27,7 +27,7 @@ void mox::Point::Init(v8::Local<v8::Object> namespc)
   namespc->Set(Nan::New("Point").ToLocalChecked(), tpl->GetFunction());
 }
 
-void mox::Point::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+void moxcad::Point::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   ALLOW_ONLY_CONSTRUCTOR(info);
 
   double x=0,y=0,z=0;
@@ -46,22 +46,22 @@ void mox::Point::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   info.GetReturnValue().Set(info.This());
 }
 
-void mox::Point::GetX(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+void moxcad::Point::GetX(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   Point* obj = ObjectWrap::Unwrap<Point>(info.Holder());
   info.GetReturnValue().Set(Nan::New(obj->m_point.X()));
 }
 
-void mox::Point::GetY(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+void moxcad::Point::GetY(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   Point* obj = ObjectWrap::Unwrap<Point>(info.Holder());
   info.GetReturnValue().Set(Nan::New(obj->m_point.Y()));
 }
 
-void mox::Point::GetZ(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+void moxcad::Point::GetZ(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   Point* obj = ObjectWrap::Unwrap<Point>(info.Holder());
   info.GetReturnValue().Set(Nan::New(obj->m_point.Z()));
 }
 
-void mox::Point::SetXYZ(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+void moxcad::Point::SetXYZ(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   Point* obj = ObjectWrap::Unwrap<Point>(info.Holder());
   if(info.Length() != 3) {
     Nan::ThrowError("Wrong number of arguments");

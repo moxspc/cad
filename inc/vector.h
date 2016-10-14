@@ -4,7 +4,7 @@
 #include <nan.h>
 #include <gp_Vec.hxx>
 
-namespace mox {
+namespace moxcad {
   class Vector : public Nan::ObjectWrap {
   public:
     static void Init(v8::Local<v8::Object> namespc);

@@ -5,7 +5,7 @@
 #include <nan.h>
 #include "node.h"
 
-namespace mox {
+namespace moxcad {
 
   using v8::FunctionCallbackInfo;
   using v8::Isolate;

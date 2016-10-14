@@ -2,29 +2,29 @@
 #include "helper.h"
 #include "buffermesh.h"
 
-Nan::Persistent<v8::Function> mox::BufferMesh::constructor;
+Nan::Persistent<v8::Function> moxcad::BufferMesh::constructor;
 
-mox::BufferMesh::BufferMesh()
+moxcad::BufferMesh::BufferMesh()
 {
 }
 
-mox::BufferMesh::~BufferMesh()
+moxcad::BufferMesh::~BufferMesh()
 {
 }
 
-void mox::BufferMesh::addVertex(TopoDS_Vertex vertex)
+void moxcad::BufferMesh::addVertex(TopoDS_Vertex vertex)
 {
 }
 
-void mox::BufferMesh::addEdge(TopoDS_Edge edge)
+void moxcad::BufferMesh::addEdge(TopoDS_Edge edge)
 {
 }
 
-void mox::BufferMesh::addFace(TopoDS_Face face)
+void moxcad::BufferMesh::addFace(TopoDS_Face face)
 {
 }
 
-void mox::BufferMesh::Init(v8::Local<v8::Object> namespc)
+void moxcad::BufferMesh::Init(v8::Local<v8::Object> namespc)
 {
   DEFINE_FUNCTION_TEMPLATE("BufferMesh", tpl);
 
@@ -32,7 +32,7 @@ void mox::BufferMesh::Init(v8::Local<v8::Object> namespc)
   namespc->Set(Nan::New("BufferMesh").ToLocalChecked(), tpl->GetFunction());
 }
 
-NAN_METHOD(mox::BufferMesh::New)
+NAN_METHOD(moxcad::BufferMesh::New)
 {
   ALLOW_ONLY_CONSTRUCTOR(info);
   BufferMesh *obj = new BufferMesh();
@@ -40,7 +40,7 @@ NAN_METHOD(mox::BufferMesh::New)
   info.GetReturnValue().Set(info.This());
 }
 
-v8::Local<v8::Object> mox::BufferMesh::NewInstance()
+v8::Local<v8::Object> moxcad::BufferMesh::NewInstance()
 {
   Nan::EscapableHandleScope scope;
 

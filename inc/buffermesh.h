@@ -10,7 +10,7 @@
 #include <TopoDS_Edge.hxx>
 #include <TopoDS_Vertex.hxx>
 
-namespace mox {
+namespace moxcad {
 
   class BufferMesh : public Nan::ObjectWrap {
   public:

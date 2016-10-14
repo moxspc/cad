@@ -1,7 +1,7 @@
 
 #include <nan.h>
 
-namespace mox {
+namespace moxcad {
   namespace ops {
 
     void Init(v8::Local<v8::Object> namespc);

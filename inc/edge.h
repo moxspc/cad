@@ -5,7 +5,7 @@
 #include <nan.h>
 #include <TopoDS_Edge.hxx>
 
-namespace mox {
+namespace moxcad {
 
   class Edge : public Nan::ObjectWrap {
   public:

@@ -13,17 +13,17 @@
 #include <Poly_Array1OfTriangle.hxx>
 #include <TColgp_Array1OfPnt.hxx>
 
-Nan::Persistent<v8::Function> mox::Solid::constructor;
+Nan::Persistent<v8::Function> moxcad::Solid::constructor;
 
-mox::Solid::Solid()
+moxcad::Solid::Solid()
 {
 }
 
-mox::Solid::~Solid()
+moxcad::Solid::~Solid()
 {
 }
 
-void mox::Solid::Init(v8::Local<v8::Object> namespc)
+void moxcad::Solid::Init(v8::Local<v8::Object> namespc)
 {
   DEFINE_FUNCTION_TEMPLATE("Solid", tpl);
 
@@ -42,7 +42,7 @@ void mox::Solid::Init(v8::Local<v8::Object> namespc)
   namespc->Set(Nan::New("Solid").ToLocalChecked(), tpl->GetFunction());
 }
 
-NAN_METHOD(mox::Solid::New)
+NAN_METHOD(moxcad::Solid::New)
 {
   ALLOW_ONLY_CONSTRUCTOR(info);
   Solid *obj = new Solid();
@@ -50,9 +50,9 @@ NAN_METHOD(mox::Solid::New)
   info.GetReturnValue().Set(info.This());
 }
 
-NAN_METHOD(mox::Solid::numFaces)
+NAN_METHOD(moxcad::Solid::numFaces)
 {
-  GET_SELF(mox::Solid, self);
+  GET_SELF(moxcad::Solid, self);
   TopExp_Explorer exp(self->m_solid, TopAbs_FACE);
   unsigned int i=0;
   while(exp.More()) {
@@ -62,9 +62,9 @@ NAN_METHOD(mox::Solid::numFaces)
   info.GetReturnValue().Set(Nan::New<v8::Uint32>(i));
 }
 
-NAN_METHOD(mox::Solid::numEdges)
+NAN_METHOD(moxcad::Solid::numEdges)
 {
-  GET_SELF(mox::Solid, self);
+  GET_SELF(moxcad::Solid, self);
   TopExp_Explorer exp(self->m_solid, TopAbs_EDGE);
   unsigned int i=0;
   while(exp.More()) {
@@ -77,9 +77,9 @@ NAN_METHOD(mox::Solid::numEdges)
   info.GetReturnValue().Set(Nan::New<v8::Uint32>(i));
 }
 
-NAN_METHOD(mox::Solid::numVertices)
+NAN_METHOD(moxcad::Solid::numVertices)
 {
-  GET_SELF(mox::Solid, self);
+  GET_SELF(moxcad::Solid, self);
   TopExp_Explorer exp(self->m_solid, TopAbs_VERTEX);
   unsigned int i=0;
   while(exp.More()) {
@@ -89,9 +89,9 @@ NAN_METHOD(mox::Solid::numVertices)
   info.GetReturnValue().Set(Nan::New<v8::Uint32>(i));
 }
 
-NAN_METHOD(mox::Solid::numShells)
+NAN_METHOD(moxcad::Solid::numShells)
 {
-  GET_SELF(mox::Solid, self);
+  GET_SELF(moxcad::Solid, self);
   TopExp_Explorer exp(self->m_solid, TopAbs_SHELL);
   unsigned int i=0;
   while(exp.More()) {
@@ -102,20 +102,20 @@ NAN_METHOD(mox::Solid::numShells)
 
 }
 
-NAN_METHOD(mox::Solid::eachVertex)
+NAN_METHOD(moxcad::Solid::eachVertex)
 {
   // Extract callback function
   v8::Local<v8::Function> cb = info[0].As<v8::Function>();
 
   // Iterate over vertices
-  GET_SELF(mox::Solid, self);
+  GET_SELF(moxcad::Solid, self);
   TopExp_Explorer exp(self->m_solid, TopAbs_VERTEX);
   while(exp.More()) {
     TopoDS_Vertex topoVtx = TopoDS::Vertex(exp.Current());
 
     // Package the vertex into Javascript object and invoke callback with it
-    v8::Local<v8::Object> vtxInstance = mox::Vertex::NewInstance();
-    mox::Vertex *vtx = ObjectWrap::Unwrap<mox::Vertex>(vtxInstance);
+    v8::Local<v8::Object> vtxInstance = moxcad::Vertex::NewInstance();
+    moxcad::Vertex *vtx = ObjectWrap::Unwrap<moxcad::Vertex>(vtxInstance);
     vtx->setOCC(topoVtx);
 
     // Invoke callback
@@ -128,21 +128,21 @@ NAN_METHOD(mox::Solid::eachVertex)
   info.GetReturnValue().Set(info.This());
 }
 
-NAN_METHOD(mox::Solid::eachEdge)
+NAN_METHOD(moxcad::Solid::eachEdge)
 {
   // Extract callback function
   v8::Local<v8::Function> cb = info[0].As<v8::Function>();
 
   // Iterate over edges
-  GET_SELF(mox::Solid, self);
+  GET_SELF(moxcad::Solid, self);
   TopExp_Explorer exp(self->m_solid, TopAbs_EDGE);
   while(exp.More()) {
     TopoDS_Edge topoEdge = TopoDS::Edge(exp.Current());
 
     if(topoEdge.Orientation() == TopAbs_FORWARD) {
       // Package the edge into Javascript object and invoke callback with it
-      v8::Local<v8::Object> edgeInstance = mox::Edge::NewInstance();
-      mox::Edge *edge = ObjectWrap::Unwrap<mox::Edge>(edgeInstance);
+      v8::Local<v8::Object> edgeInstance = moxcad::Edge::NewInstance();
+      moxcad::Edge *edge = ObjectWrap::Unwrap<moxcad::Edge>(edgeInstance);
       edge->setOCC(topoEdge);
 
       // Invoke callback
@@ -156,20 +156,20 @@ NAN_METHOD(mox::Solid::eachEdge)
   info.GetReturnValue().Set(info.This());
 }
 
-NAN_METHOD(mox::Solid::eachFace)
+NAN_METHOD(moxcad::Solid::eachFace)
 {
   // Extract callback function
   v8::Local<v8::Function> cb = info[0].As<v8::Function>();
 
   // Iterate over faces
-  GET_SELF(mox::Solid, self);
+  GET_SELF(moxcad::Solid, self);
   TopExp_Explorer exp(self->m_solid, TopAbs_FACE);
   while(exp.More()) {
     TopoDS_Face topoFace = TopoDS::Face(exp.Current());
 
     // Package the face into Javascript object and invoke callback with it
-    v8::Local<v8::Object> faceInstance = mox::Face::NewInstance();
-    mox::Face *face = ObjectWrap::Unwrap<mox::Face>(faceInstance);
+    v8::Local<v8::Object> faceInstance = moxcad::Face::NewInstance();
+    moxcad::Face *face = ObjectWrap::Unwrap<moxcad::Face>(faceInstance);
     face->setOCC(topoFace);
 
     // Invoke callback
@@ -182,13 +182,13 @@ NAN_METHOD(mox::Solid::eachFace)
   info.GetReturnValue().Set(info.This());
 }
 
-NAN_METHOD(mox::Solid::tessellate)
+NAN_METHOD(moxcad::Solid::tessellate)
 {
-  v8::Local<v8::Object> bufferMeshHdl = mox::BufferMesh::NewInstance();
-  mox::BufferMesh *bufferMesh =
-    ObjectWrap::Unwrap<mox::BufferMesh>(bufferMeshHdl);
+  v8::Local<v8::Object> bufferMeshHdl = moxcad::BufferMesh::NewInstance();
+  moxcad::BufferMesh *bufferMesh =
+    ObjectWrap::Unwrap<moxcad::BufferMesh>(bufferMeshHdl);
 
-  GET_SELF(mox::Solid, self);
+  GET_SELF(moxcad::Solid, self);
 
   const Standard_Real aLinearDeflection   = 0.01;
   const Standard_Real anAngularDeflection = 0.5;
@@ -220,7 +220,7 @@ NAN_METHOD(mox::Solid::tessellate)
   info.GetReturnValue().Set(bufferMeshHdl);
 }
 
-v8::Local<v8::Object> mox::Solid::NewInstance()
+v8::Local<v8::Object> moxcad::Solid::NewInstance()
 {
   Nan::EscapableHandleScope scope;
 

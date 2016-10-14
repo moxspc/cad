@@ -4,26 +4,26 @@
 
 #include <BRep_Tool.hxx>
 
-Nan::Persistent<v8::Function> mox::Vertex::constructor;
+Nan::Persistent<v8::Function> moxcad::Vertex::constructor;
 
-mox::Vertex::Vertex()
+moxcad::Vertex::Vertex()
 {
 }
 
-mox::Vertex::Vertex(TopoDS_Vertex occVertex) : m_vertex(occVertex)
+moxcad::Vertex::Vertex(TopoDS_Vertex occVertex) : m_vertex(occVertex)
 {
 }
 
-mox::Vertex::~Vertex()
+moxcad::Vertex::~Vertex()
 {
 }
 
-void mox::Vertex::setOCC(TopoDS_Vertex occVertex)
+void moxcad::Vertex::setOCC(TopoDS_Vertex occVertex)
 {
   m_vertex = occVertex;
 }
 
-void mox::Vertex::Init(v8::Local<v8::Object> namespc)
+void moxcad::Vertex::Init(v8::Local<v8::Object> namespc)
 {
   DEFINE_FUNCTION_TEMPLATE("Vertex", tpl);
 
@@ -33,7 +33,7 @@ void mox::Vertex::Init(v8::Local<v8::Object> namespc)
   namespc->Set(Nan::New("Vertex").ToLocalChecked(), tpl->GetFunction());
 }
 
-v8::Local<v8::Object> mox::Vertex::NewInstance()
+v8::Local<v8::Object> moxcad::Vertex::NewInstance()
 {
   Nan::EscapableHandleScope scope;
 
@@ -45,7 +45,7 @@ v8::Local<v8::Object> mox::Vertex::NewInstance()
   return scope.Escape(instance);
 }
 
-NAN_METHOD(mox::Vertex::New)
+NAN_METHOD(moxcad::Vertex::New)
 {
   if(info.IsConstructCall()) {
     Vertex *obj = new Vertex();
@@ -59,9 +59,9 @@ NAN_METHOD(mox::Vertex::New)
   }
 }
 
-NAN_METHOD(mox::Vertex::toString)
+NAN_METHOD(moxcad::Vertex::toString)
 {
-  GET_SELF(mox::Vertex, self);
+  GET_SELF(moxcad::Vertex, self);
   std::stringstream ss;
   if(self->m_vertex.IsNull()) {
     ss << "NULL";

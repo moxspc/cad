@@ -6,7 +6,7 @@
 #include <TopoDS_Wire.hxx>
 #include <TopTools_ListOfShape.hxx>
 
-namespace mox {
+namespace moxcad {
   class Wire : public Nan::ObjectWrap {
   public:
     static void Init(v8::Local<v8::Object> namespc);

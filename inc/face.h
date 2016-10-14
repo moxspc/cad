@@ -5,7 +5,7 @@
 #include <TopoDS_Face.hxx>
 #include <TopoDS_Wire.hxx>
 
-namespace mox {
+namespace moxcad {
 
   class Face : public Nan::ObjectWrap {
   public:

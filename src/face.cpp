@@ -3,21 +3,21 @@
 #include "face.h"
 #include "wire.h"
 
-Nan::Persistent<v8::Function> mox::Face::constructor;
+Nan::Persistent<v8::Function> moxcad::Face::constructor;
 
-mox::Face::Face()
+moxcad::Face::Face()
 {
 }
 
-mox::Face::Face(TopoDS_Face occFace) : m_face(occFace)
+moxcad::Face::Face(TopoDS_Face occFace) : m_face(occFace)
 {
 }
 
-mox::Face::~Face()
+moxcad::Face::~Face()
 {
 }
 
-void mox::Face::Init(v8::Local<v8::Object> namespc)
+void moxcad::Face::Init(v8::Local<v8::Object> namespc)
 {
   DEFINE_FUNCTION_TEMPLATE("Face", tpl);
 
@@ -27,7 +27,7 @@ void mox::Face::Init(v8::Local<v8::Object> namespc)
   namespc->Set(Nan::New("Face").ToLocalChecked(), tpl->GetFunction());
 }
 
-v8::Local<v8::Object> mox::Face::NewInstance()
+v8::Local<v8::Object> moxcad::Face::NewInstance()
 {
   Nan::EscapableHandleScope scope;
 
@@ -39,7 +39,7 @@ v8::Local<v8::Object> mox::Face::NewInstance()
   return scope.Escape(instance);
 }
 
-NAN_METHOD(mox::Face::New)
+NAN_METHOD(moxcad::Face::New)
 {
   ALLOW_ONLY_CONSTRUCTOR(info);
 
@@ -48,9 +48,9 @@ NAN_METHOD(mox::Face::New)
   info.GetReturnValue().Set(info.This());
 }
 
-NAN_METHOD(mox::Face::toString)
+NAN_METHOD(moxcad::Face::toString)
 {
-  GET_SELF(mox::Face, self);
+  GET_SELF(moxcad::Face, self);
   std::stringstream ss;
   TopAbs_Orientation orientation = self->m_face.Orientation();
   ss << " Orientation: ";

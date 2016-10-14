@@ -2,17 +2,17 @@
 #include "helper.h"
 #include "vector.h"
 
-Nan::Persistent<v8::Function> mox::Vector::constructor;
+Nan::Persistent<v8::Function> moxcad::Vector::constructor;
 
-mox::Vector::Vector(double x, double y, double z) : m_vector(x,y,z)
+moxcad::Vector::Vector(double x, double y, double z) : m_vector(x,y,z)
 {
 }
 
-mox::Vector::~Vector()
+moxcad::Vector::~Vector()
 {
 }
 
-void mox::Vector::Init(v8::Local<v8::Object> namespc)
+void moxcad::Vector::Init(v8::Local<v8::Object> namespc)
 {
   DEFINE_FUNCTION_TEMPLATE("Vector", tpl);
 
@@ -20,7 +20,7 @@ void mox::Vector::Init(v8::Local<v8::Object> namespc)
   namespc->Set(Nan::New("Vector").ToLocalChecked(), tpl->GetFunction());
 }
 
-NAN_METHOD(mox::Vector::New)
+NAN_METHOD(moxcad::Vector::New)
 {
   ALLOW_ONLY_CONSTRUCTOR(info);
 

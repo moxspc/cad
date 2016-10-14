@@ -4,7 +4,7 @@
 #include <nan.h>
 #include <TopoDS_Vertex.hxx>
 
-namespace mox {
+namespace moxcad {
 
   class Vertex : public Nan::ObjectWrap {
   public:

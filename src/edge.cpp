@@ -8,26 +8,26 @@
 #include <TopExp_Explorer.hxx>
 #include <BRep_Tool.hxx>
 
-Nan::Persistent<v8::Function> mox::Edge::constructor;
+Nan::Persistent<v8::Function> moxcad::Edge::constructor;
 
-mox::Edge::Edge()
+moxcad::Edge::Edge()
 {
 }
 
-mox::Edge::Edge(TopoDS_Edge occEdge) : m_edge(occEdge)
+moxcad::Edge::Edge(TopoDS_Edge occEdge) : m_edge(occEdge)
 {
 }
 
-mox::Edge::~Edge()
+moxcad::Edge::~Edge()
 {
 }
 
-void mox::Edge::setOCC(TopoDS_Edge occEdge)
+void moxcad::Edge::setOCC(TopoDS_Edge occEdge)
 {
   m_edge = occEdge;
 }
 
-void mox::Edge::Init(v8::Local<v8::Object> namespc)
+void moxcad::Edge::Init(v8::Local<v8::Object> namespc)
 {
   DEFINE_FUNCTION_TEMPLATE("Edge", tpl);
 
@@ -37,7 +37,7 @@ void mox::Edge::Init(v8::Local<v8::Object> namespc)
   namespc->Set(Nan::New("Edge").ToLocalChecked(), tpl->GetFunction());
 }
 
-v8::Local<v8::Object> mox::Edge::NewInstance()
+v8::Local<v8::Object> moxcad::Edge::NewInstance()
 {
   Nan::EscapableHandleScope scope;
 
@@ -49,7 +49,7 @@ v8::Local<v8::Object> mox::Edge::NewInstance()
   return scope.Escape(instance);
 }
 
-NAN_METHOD(mox::Edge::New)
+NAN_METHOD(moxcad::Edge::New)
 {
   ALLOW_ONLY_CONSTRUCTOR(info);
 
@@ -58,9 +58,9 @@ NAN_METHOD(mox::Edge::New)
   info.GetReturnValue().Set(info.This());
 }
 
-NAN_METHOD(mox::Edge::toString)
+NAN_METHOD(moxcad::Edge::toString)
 {
-  GET_SELF(mox::Edge, self);
+  GET_SELF(moxcad::Edge, self);
 
   std::stringstream ss;
 

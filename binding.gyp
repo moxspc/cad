@@ -1,7 +1,10 @@
 {
+  "variables" : {
+    "OCC_ROOT" : '/home/jayesh/output/occ'
+  },
   "targets": [
     {
-      "target_name": "mox",
+      "target_name": "moxcad",
       "include_dirs" : [
         "inc",
         "<(OCC_ROOT)/inc",

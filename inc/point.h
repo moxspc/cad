@@ -4,7 +4,7 @@
 #include <nan.h>
 #include <gp_Pnt.hxx>
 
-namespace mox {
+namespace moxcad {
 
   class Point : public Nan::ObjectWrap {
   public:

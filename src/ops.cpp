@@ -16,16 +16,16 @@
 #include <Geom2dConvert_BSplineCurveToBezierCurve.hxx>
 
 
-void mox::ops::Init(v8::Local<v8::Object> namespc)
+void moxcad::ops::Init(v8::Local<v8::Object> namespc)
 {
-  NODE_SET_METHOD(namespc, "extrude", mox::ops::extrude);
-  NODE_SET_METHOD(namespc, "approximate2d", mox::ops::approximate2d);
+  NODE_SET_METHOD(namespc, "extrude", moxcad::ops::extrude);
+  NODE_SET_METHOD(namespc, "approximate2d", moxcad::ops::approximate2d);
 }
 
-void mox::ops::extrude(const v8::FunctionCallbackInfo<v8::Value>& info)
+void moxcad::ops::extrude(const v8::FunctionCallbackInfo<v8::Value>& info)
 {
-  mox::Face *face = Nan::ObjectWrap::Unwrap<mox::Face>(info[0]->ToObject());
-  mox::Vector *dir = Nan::ObjectWrap::Unwrap<mox::Vector>(info[1]->ToObject());
+  moxcad::Face *face = Nan::ObjectWrap::Unwrap<moxcad::Face>(info[0]->ToObject());
+  moxcad::Vector *dir = Nan::ObjectWrap::Unwrap<moxcad::Vector>(info[1]->ToObject());
 
   TopoDS_Shape occSolid = BRepPrimAPI_MakePrism(face->toOCC(), dir->toOCC());
   if(occSolid.ShapeType() != TopAbs_SOLID) {
@@ -33,8 +33,8 @@ void mox::ops::extrude(const v8::FunctionCallbackInfo<v8::Value>& info)
     return;
   }
 
-  v8::Local<v8::Object> jsSolid = mox::Solid::NewInstance();
-  mox::Solid *solid = Nan::ObjectWrap::Unwrap<mox::Solid>(jsSolid);
+  v8::Local<v8::Object> jsSolid = moxcad::Solid::NewInstance();
+  moxcad::Solid *solid = Nan::ObjectWrap::Unwrap<moxcad::Solid>(jsSolid);
   assert(solid != NULL);
   solid->setOCC(occSolid);
 
@@ -42,7 +42,7 @@ void mox::ops::extrude(const v8::FunctionCallbackInfo<v8::Value>& info)
 }
 
 
-void mox::ops::approximate2d(const v8::FunctionCallbackInfo<v8::Value>& info)
+void moxcad::ops::approximate2d(const v8::FunctionCallbackInfo<v8::Value>& info)
 {
   uint nPoints = info.Length();
   TColgp_Array1OfPnt2d arrPoints(1, nPoints);
@@ -52,16 +52,21 @@ void mox::ops::approximate2d(const v8::FunctionCallbackInfo<v8::Value>& info)
       gp_Pnt2d(coord->Get(0)->NumberValue(), coord->Get(1)->NumberValue()));
   }
 
-  Geom2dAPI_PointsToBSpline api(arrPoints, 3,3,GeomAbs_G1, 1e-6);
+  Geom2dAPI_PointsToBSpline api(arrPoints, 3,3,GeomAbs_G1, 10.0);
+
+  if(!api.IsDone()) {
+    Nan::ThrowError("Geom2dAPI_PointsToBSpline not done");
+    return;
+  }
 
   Geom2dConvert_BSplineCurveToBezierCurve convapi(api.Curve());
 
   v8::Local<v8::Array> bezArray = Nan::New<v8::Array>(convapi.NbArcs());
 
-  for(uint i=1; i<=convapi.NbArcs(); i++) {
+  for(int i=1; i<=convapi.NbArcs(); i++) {
     assert(convapi.Arc(i)->Degree() == 3);
     v8::Local<v8::Array> cpointsArray = Nan::New<v8::Array>(4);
-    for(uint j=1; j<=convapi.Arc(i)->NbPoles(); j++) {
+    for(int j=1; j<=convapi.Arc(i)->NbPoles(); j++) {
       v8::Local<v8::Array> cpoint = Nan::New<v8::Array>(2);
       gp_Pnt2d pole = convapi.Arc(i)->Pole(j);
       cpoint->Set(0, Nan::New<v8::Number>(pole.X()));
