@@ -2,6 +2,7 @@
   "name": "moxcad",
   "version": "0.0.1",
   "description": "Geometry Kernel API, implemented as Node bindings to OpenCASCADE.",
+  "main" : "./build/Release/moxcad",
   "scripts": {
     "test": "mocha tests",
     "install": "node-gyp rebuild"
