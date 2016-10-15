@@ -1,6 +1,6 @@
 
 var assert = require('assert');
-var mox = require('../build/Debug/mox');
+var mox = require('../build/Debug/moxcad');
 
 describe('Point', function() {
   it('Empty Constructor', function () {

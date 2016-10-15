@@ -184,9 +184,15 @@ NAN_METHOD(moxcad::Solid::eachFace)
 
 NAN_METHOD(moxcad::Solid::tessellate)
 {
-  v8::Local<v8::Object> bufferMeshHdl = moxcad::BufferMesh::NewInstance();
-  moxcad::BufferMesh *bufferMesh =
-    ObjectWrap::Unwrap<moxcad::BufferMesh>(bufferMeshHdl);
+  v8::Local<v8::Object> buffers = Nan::New<v8::Object>();
+
+  v8::Local<v8::Array> faceBuffers = Nan::New<v8::Array>();
+
+  //v8::Local<v8::Object> bufferMeshHdl = moxcad::BufferMesh::NewInstance();
+  //moxcad::BufferMesh *bufferMesh =
+  //  ObjectWrap::Unwrap<moxcad::BufferMesh>(bufferMeshHdl);
+
+  v8::Isolate* isolate = info.GetIsolate();
 
   GET_SELF(moxcad::Solid, self);
 
@@ -194,30 +200,53 @@ NAN_METHOD(moxcad::Solid::tessellate)
   const Standard_Real anAngularDeflection = 0.5;
 
   TopExp_Explorer exp(self->m_solid, TopAbs_FACE);
+  int i = 0;
   while(exp.More()) {
     TopoDS_Face topoFace = TopoDS::Face(exp.Current());
     BRepMesh_IncrementalMesh aMesh(topoFace, aLinearDeflection, Standard_False, anAngularDeflection);
     aMesh.Perform();
     TopLoc_Location l;
     const Handle(Poly_Triangulation)& pt = BRep_Tool::Triangulation(topoFace, l);
-    //MOXLOG("Num Triangles " << (pt.IsNull() ? 0 : pt->NbTriangles()));
     const Poly_Array1OfTriangle& polyarr = pt->Triangles();
 
-    for(Standard_Integer i=polyarr.Lower(); i<=polyarr.Upper(); i++) {
+    // Indices
+    v8::Local<v8::Uint32Array> idxArr =
+      v8::Uint32Array::New(v8::ArrayBuffer::New(isolate, 4*polyarr.Size()),0,polyarr.Size());
+    for(Standard_Integer i=polyarr.Lower(), idx=0; i<=polyarr.Upper(); i++, idx++) {
       const Poly_Triangle& ptri = polyarr.Value(i);
-      //MOXLOG("Indices " << ptri.Value(1) << "," << ptri.Value(2) << "," << ptri.Value(3));
+      idxArr->Set(Nan::GetCurrentContext(), 3*idx, Nan::New<v8::Uint32>(ptri.Value(1)));
+      idxArr->Set(Nan::GetCurrentContext(), 3*idx+1, Nan::New<v8::Uint32>(ptri.Value(2)));
+      idxArr->Set(Nan::GetCurrentContext(), 3*idx+2, Nan::New<v8::Uint32>(ptri.Value(3)));
     }
 
+    // Vertices
     const TColgp_Array1OfPnt& nodes = pt->Nodes();
-    for(Standard_Integer i=nodes.Lower(); i<=nodes.Upper(); i++) {
+    int nReals = nodes.Size() * 3;
+    v8::Local<v8::Float32Array> vtxArr =
+      v8::Float32Array::New(v8::ArrayBuffer::New(isolate, 4*nReals),0,nReals);
+    for(Standard_Integer i=nodes.Lower(), idx=0; i<=nodes.Upper(); i++, idx++) {
       const gp_Pnt& pnt = nodes.Value(i);
-      //MOXLOG(i << " [" << pnt.X() << "," << pnt.Y() << "," << pnt.Z() << "]");
+      vtxArr->Set(Nan::GetCurrentContext(), 3*idx, Nan::New<v8::Number>(pnt.X()));
+      vtxArr->Set(Nan::GetCurrentContext(), 3*idx+1, Nan::New<v8::Number>(pnt.Y()));
+      vtxArr->Set(Nan::GetCurrentContext(), 3*idx+2, Nan::New<v8::Number>(pnt.Z()));
     }
 
-    bufferMesh->addFace(topoFace);
+    v8::Local<v8::Object> buffers = Nan::New<v8::Object>();
+    buffers->Set(Nan::New("vtx").ToLocalChecked(), vtxArr);
+    buffers->Set(Nan::New("idx").ToLocalChecked(), idxArr);
+
+    faceBuffers->Set(i, buffers);
+
+    //bufferMesh->addFace(topoFace);
     exp.Next();
+
+    i++;
   }
-  info.GetReturnValue().Set(bufferMeshHdl);
+
+  buffers->Set(Nan::New("faceBuffers").ToLocalChecked(), faceBuffers);
+
+  //info.GetReturnValue().Set(bufferMeshHdl);
+  info.GetReturnValue().Set(buffers);
 }
 
 v8::Local<v8::Object> moxcad::Solid::NewInstance()
