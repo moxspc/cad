@@ -210,20 +210,18 @@ NAN_METHOD(moxcad::Solid::tessellate)
     const Poly_Array1OfTriangle& polyarr = pt->Triangles();
 
     // Indices
-    v8::Local<v8::Uint32Array> idxArr =
-      v8::Uint32Array::New(v8::ArrayBuffer::New(isolate, 4*polyarr.Size()),0,polyarr.Size());
+    v8::Local<v8::Array> idxArr = Nan::New<v8::Array>();
     for(Standard_Integer i=polyarr.Lower(), idx=0; i<=polyarr.Upper(); i++, idx++) {
       const Poly_Triangle& ptri = polyarr.Value(i);
-      idxArr->Set(Nan::GetCurrentContext(), 3*idx, Nan::New<v8::Uint32>(ptri.Value(1)));
-      idxArr->Set(Nan::GetCurrentContext(), 3*idx+1, Nan::New<v8::Uint32>(ptri.Value(2)));
-      idxArr->Set(Nan::GetCurrentContext(), 3*idx+2, Nan::New<v8::Uint32>(ptri.Value(3)));
+      idxArr->Set(Nan::GetCurrentContext(), 3*idx, Nan::New<v8::Uint32>(ptri.Value(1)-1));
+      idxArr->Set(Nan::GetCurrentContext(), 3*idx+1, Nan::New<v8::Uint32>(ptri.Value(2)-1));
+      idxArr->Set(Nan::GetCurrentContext(), 3*idx+2, Nan::New<v8::Uint32>(ptri.Value(3)-1));
     }
 
     // Vertices
     const TColgp_Array1OfPnt& nodes = pt->Nodes();
     int nReals = nodes.Size() * 3;
-    v8::Local<v8::Float32Array> vtxArr =
-      v8::Float32Array::New(v8::ArrayBuffer::New(isolate, 4*nReals),0,nReals);
+    v8::Local<v8::Array> vtxArr = Nan::New<v8::Array>();
     for(Standard_Integer i=nodes.Lower(), idx=0; i<=nodes.Upper(); i++, idx++) {
       const gp_Pnt& pnt = nodes.Value(i);
       vtxArr->Set(Nan::GetCurrentContext(), 3*idx, Nan::New<v8::Number>(pnt.X()));
