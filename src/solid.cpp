@@ -182,6 +182,90 @@ NAN_METHOD(moxcad::Solid::eachFace)
   info.GetReturnValue().Set(info.This());
 }
 
+void extractFaceBuffer(const TopoDS_Face& face, v8::Handle<v8::Object>& output)
+{
+  const Standard_Real linDeflection   = 0.01;
+  const Standard_Real angDeflection = 0.5;
+
+  TopAbs_Orientation faceOrient = face.Orientation();
+
+  BRepMesh_IncrementalMesh aMesh(
+    face, linDeflection, Standard_False, angDeflection);
+  aMesh.Perform();
+
+  TopLoc_Location faceLocation;
+  const Handle(Poly_Triangulation)& pt =
+    BRep_Tool::Triangulation(face, faceLocation);
+
+  const Poly_Array1OfTriangle& triangles = pt->Triangles();
+  const TColgp_Array1OfPnt& nodes = pt->Nodes();
+
+  v8::Local<v8::Context> ctx = Nan::GetCurrentContext();
+  v8::Local<v8::Array> idxArr = Nan::New<v8::Array>();
+  v8::Local<v8::Array> vtxArr = Nan::New<v8::Array>();
+  v8::Local<v8::Array> nrmArr = Nan::New<v8::Array>();
+
+  for(Standard_Integer i=triangles.Lower(), idx=0; i<=triangles.Upper(); i++, idx++) {
+    const Poly_Triangle& triangle = triangles.Value(i);
+    Standard_Integer N1, N2, N3;
+    triangle.Get(N1, N2, N3);
+    if(faceOrient != TopAbs_FORWARD) {
+      Standard_Integer tmp = N1;
+      N1 = N2;
+      N2 = tmp;
+    }
+    gp_Pnt V1(nodes(N1));
+    gp_Pnt V2(nodes(N2));
+    gp_Pnt V3(nodes(N3));
+
+    if(!faceLocation.IsIdentity()) {
+      const gp_Trsf& faceTransform = faceLocation.Transformation();
+      V1.Transform(faceTransform);
+      V2.Transform(faceTransform);
+      V3.Transform(faceTransform);
+    }
+
+    // Calculate normal
+    gp_Vec vec1(V1.X(),V1.Y(),V1.Z());
+    gp_Vec vec2(V2.X(),V2.Y(),V2.Z());
+    gp_Vec vec3(V3.X(),V3.Y(),V3.Z());
+    gp_Vec normal = (vec2-vec1)^(vec3-vec1);
+
+    idxArr->Set(ctx, 3*idx, Nan::New<v8::Uint32>(triangle.Value(1)-1));
+    idxArr->Set(ctx, 3*idx+1, Nan::New<v8::Uint32>(triangle.Value(2)-1));
+    idxArr->Set(ctx, 3*idx+2, Nan::New<v8::Uint32>(triangle.Value(3)-1));
+  }
+
+  output->Set(Nan::New("idx").ToLocalChecked(), idxArr);
+
+  // Vertices
+  for(Standard_Integer i=nodes.Lower(), idx=0; i<=nodes.Upper(); i++, idx++) {
+    const gp_Pnt& pnt = nodes.Value(i);
+    vtxArr->Set(Nan::GetCurrentContext(), 3*idx, Nan::New<v8::Number>(pnt.X()));
+    vtxArr->Set(Nan::GetCurrentContext(), 3*idx+1, Nan::New<v8::Number>(pnt.Y()));
+    vtxArr->Set(Nan::GetCurrentContext(), 3*idx+2, Nan::New<v8::Number>(pnt.Z()));
+  }
+  output->Set(Nan::New("vtx").ToLocalChecked(), vtxArr);
+
+  // Normals
+  if(pt->HasNormals()) {
+    const TShort_Array1OfShortReal& normals = pt->Normals();
+    MOXLOG("Num normals " << normals.Size());
+
+  } else {
+    MOXLOG("No normals");
+  }
+
+  // UVs
+  if(pt->HasUVNodes()) {
+    const TColgp_Array1OfPnt2d& uvs = pt->UVNodes();
+    MOXLOG("Num UVs " << uvs.Size());
+
+  } else {
+    MOXLOG("No UVs");
+  }
+}
+
 NAN_METHOD(moxcad::Solid::tessellate)
 {
   v8::Local<v8::Object> buffers = Nan::New<v8::Object>();
