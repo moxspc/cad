@@ -12,6 +12,7 @@
 #include <BRepMesh_IncrementalMesh.hxx>
 #include <Poly_Array1OfTriangle.hxx>
 #include <TColgp_Array1OfPnt.hxx>
+#include <GeomLib.hxx>
 
 Nan::Persistent<v8::Function> moxcad::Solid::constructor;
 
@@ -187,6 +188,14 @@ void extractFaceBuffer(const TopoDS_Face& face, v8::Handle<v8::Object>& output)
   const Standard_Real linDeflection   = 0.01;
   const Standard_Real angDeflection = 0.5;
 
+  v8::Local<v8::Context> ctx = Nan::GetCurrentContext();
+  v8::Local<v8::Array> idxArr = Nan::New<v8::Array>();
+  v8::Local<v8::Array> vtxArr = Nan::New<v8::Array>();
+  v8::Local<v8::Array> nrmArr = Nan::New<v8::Array>();
+  v8::Local<v8::Array> uvArr = Nan::New<v8::Array>();
+
+  bool normalsPopulated = false;
+
   TopAbs_Orientation faceOrient = face.Orientation();
 
   BRepMesh_IncrementalMesh aMesh(
@@ -199,14 +208,47 @@ void extractFaceBuffer(const TopoDS_Face& face, v8::Handle<v8::Object>& output)
 
   const Poly_Array1OfTriangle& triangles = pt->Triangles();
   const TColgp_Array1OfPnt& nodes = pt->Nodes();
+  const TColgp_Array1OfPnt2d *uvs;
 
-  v8::Local<v8::Context> ctx = Nan::GetCurrentContext();
-  v8::Local<v8::Array> idxArr = Nan::New<v8::Array>();
-  v8::Local<v8::Array> vtxArr = Nan::New<v8::Array>();
-  v8::Local<v8::Array> nrmArr = Nan::New<v8::Array>();
+  if(pt->HasNormals()) {
+    // Get normals from the triangulation : TODO
+    MOXLOG("TODO: Extract normals from triangulation");
+  }
 
-  for(Standard_Integer i=triangles.Lower(), idx=0; i<=triangles.Upper(); i++, idx++) {
+  if(pt->HasUVNodes()) {
+    // Get normals from the underlying surface if available
+    uvs = &pt->UVNodes();
+    const TopoDS_Face zeroFace = TopoDS::Face(face.Located(TopLoc_Location()));
+    Handle(Geom_Surface) hdlSurf = BRep_Tool::Surface(zeroFace);
+    if(!hdlSurf.IsNull()) {
+      for(Standard_Integer iterNode = nodes.Lower(), idx=0;
+          iterNode <= nodes.Upper();
+          iterNode++, idx++)
+      {
+        gp_Pnt2d uv = uvs->Value(iterNode);
+        gp_Dir normal;
+        GeomLib::NormEstim(hdlSurf, uv, Precision::Confusion(), normal);
+
+        if(faceOrient == TopAbs_REVERSED) {
+          normal.Reverse();
+        }
+
+        nrmArr->Set(ctx, 3*idx, Nan::New<v8::Number>(normal.X()));
+        nrmArr->Set(ctx, 3*idx+1, Nan::New<v8::Number>(normal.Y()));
+        nrmArr->Set(ctx, 3*idx+2, Nan::New<v8::Number>(normal.Z()));
+      }
+      normalsPopulated = true;
+      output->Set(Nan::New("nrm").ToLocalChecked(), nrmArr);
+    }
+  }
+
+
+  for(Standard_Integer i=triangles.Lower(),
+      idx=0; i<=triangles.Upper();
+      i++, idx++)
+  {
     const Poly_Triangle& triangle = triangles.Value(i);
+    /*
     Standard_Integer N1, N2, N3;
     triangle.Get(N1, N2, N3);
     if(faceOrient != TopAbs_FORWARD) {
@@ -224,110 +266,82 @@ void extractFaceBuffer(const TopoDS_Face& face, v8::Handle<v8::Object>& output)
       V2.Transform(faceTransform);
       V3.Transform(faceTransform);
     }
+    */
 
-    // Calculate normal
-    gp_Vec vec1(V1.X(),V1.Y(),V1.Z());
-    gp_Vec vec2(V2.X(),V2.Y(),V2.Z());
-    gp_Vec vec3(V3.X(),V3.Y(),V3.Z());
-    gp_Vec normal = (vec2-vec1)^(vec3-vec1);
+    if(faceOrient == TopAbs_FORWARD) {
+      idxArr->Set(ctx, 3*idx, Nan::New<v8::Uint32>(triangle.Value(1)-1));
+      idxArr->Set(ctx, 3*idx+1, Nan::New<v8::Uint32>(triangle.Value(2)-1));
+      idxArr->Set(ctx, 3*idx+2, Nan::New<v8::Uint32>(triangle.Value(3)-1));
+    } else {
+      idxArr->Set(ctx, 3*idx, Nan::New<v8::Uint32>(triangle.Value(2)-1));
+      idxArr->Set(ctx, 3*idx+1, Nan::New<v8::Uint32>(triangle.Value(1)-1));
+      idxArr->Set(ctx, 3*idx+2, Nan::New<v8::Uint32>(triangle.Value(3)-1));
+    }
 
-    idxArr->Set(ctx, 3*idx, Nan::New<v8::Uint32>(triangle.Value(1)-1));
-    idxArr->Set(ctx, 3*idx+1, Nan::New<v8::Uint32>(triangle.Value(2)-1));
-    idxArr->Set(ctx, 3*idx+2, Nan::New<v8::Uint32>(triangle.Value(3)-1));
+
+    if(!normalsPopulated) {
+      // Calculate normal
+      /*
+      gp_Vec vec1(V1.X(),V1.Y(),V1.Z());
+      gp_Vec vec2(V2.X(),V2.Y(),V2.Z());
+      gp_Vec vec3(V3.X(),V3.Y(),V3.Z());
+      gp_Vec normal = (vec2-vec1)^(vec3-vec1);
+      */
+
+      MOXLOG("TODO: Compute per-vertex normals")
+    }
   }
-
   output->Set(Nan::New("idx").ToLocalChecked(), idxArr);
 
   // Vertices
   for(Standard_Integer i=nodes.Lower(), idx=0; i<=nodes.Upper(); i++, idx++) {
-    const gp_Pnt& pnt = nodes.Value(i);
-    vtxArr->Set(Nan::GetCurrentContext(), 3*idx, Nan::New<v8::Number>(pnt.X()));
-    vtxArr->Set(Nan::GetCurrentContext(), 3*idx+1, Nan::New<v8::Number>(pnt.Y()));
-    vtxArr->Set(Nan::GetCurrentContext(), 3*idx+2, Nan::New<v8::Number>(pnt.Z()));
+    gp_Pnt pnt = nodes.Value(i);
+    if(!faceLocation.IsIdentity()) {
+      const gp_Trsf& faceTransform = faceLocation.Transformation();
+      pnt.Transform(faceTransform);
+    }
+    vtxArr->Set(ctx, 3*idx, Nan::New<v8::Number>(pnt.X()));
+    vtxArr->Set(ctx, 3*idx+1, Nan::New<v8::Number>(pnt.Y()));
+    vtxArr->Set(ctx, 3*idx+2, Nan::New<v8::Number>(pnt.Z()));
   }
   output->Set(Nan::New("vtx").ToLocalChecked(), vtxArr);
-
-  // Normals
-  if(pt->HasNormals()) {
-    const TShort_Array1OfShortReal& normals = pt->Normals();
-    MOXLOG("Num normals " << normals.Size());
-
-  } else {
-    MOXLOG("No normals");
-  }
 
   // UVs
   if(pt->HasUVNodes()) {
     const TColgp_Array1OfPnt2d& uvs = pt->UVNodes();
-    MOXLOG("Num UVs " << uvs.Size());
-
-  } else {
-    MOXLOG("No UVs");
+    for(Standard_Integer i=nodes.Lower(), idx=0;
+        i<=nodes.Upper();
+        i++, idx++)
+    {
+      const gp_Pnt2d& uv = uvs.Value(i);
+      uvArr->Set(ctx, 2*idx, Nan::New<v8::Number>(uv.X()));
+      uvArr->Set(ctx, 2*idx+1, Nan::New<v8::Number>(uv.Y()));
+    }
+    output->Set(Nan::New("uv").ToLocalChecked(), uvArr);
   }
 }
 
 NAN_METHOD(moxcad::Solid::tessellate)
 {
   v8::Local<v8::Object> buffers = Nan::New<v8::Object>();
-
   v8::Local<v8::Array> faceBuffers = Nan::New<v8::Array>();
-
-  //v8::Local<v8::Object> bufferMeshHdl = moxcad::BufferMesh::NewInstance();
-  //moxcad::BufferMesh *bufferMesh =
-  //  ObjectWrap::Unwrap<moxcad::BufferMesh>(bufferMeshHdl);
-
-  v8::Isolate* isolate = info.GetIsolate();
 
   GET_SELF(moxcad::Solid, self);
 
-  const Standard_Real aLinearDeflection   = 0.01;
-  const Standard_Real anAngularDeflection = 0.5;
-
   TopExp_Explorer exp(self->m_solid, TopAbs_FACE);
+
   int i = 0;
   while(exp.More()) {
     TopoDS_Face topoFace = TopoDS::Face(exp.Current());
-    BRepMesh_IncrementalMesh aMesh(topoFace, aLinearDeflection, Standard_False, anAngularDeflection);
-    aMesh.Perform();
-    TopLoc_Location l;
-    const Handle(Poly_Triangulation)& pt = BRep_Tool::Triangulation(topoFace, l);
-    const Poly_Array1OfTriangle& polyarr = pt->Triangles();
-
-    // Indices
-    v8::Local<v8::Array> idxArr = Nan::New<v8::Array>();
-    for(Standard_Integer i=polyarr.Lower(), idx=0; i<=polyarr.Upper(); i++, idx++) {
-      const Poly_Triangle& ptri = polyarr.Value(i);
-      idxArr->Set(Nan::GetCurrentContext(), 3*idx, Nan::New<v8::Uint32>(ptri.Value(1)-1));
-      idxArr->Set(Nan::GetCurrentContext(), 3*idx+1, Nan::New<v8::Uint32>(ptri.Value(2)-1));
-      idxArr->Set(Nan::GetCurrentContext(), 3*idx+2, Nan::New<v8::Uint32>(ptri.Value(3)-1));
-    }
-
-    // Vertices
-    const TColgp_Array1OfPnt& nodes = pt->Nodes();
-    int nReals = nodes.Size() * 3;
-    v8::Local<v8::Array> vtxArr = Nan::New<v8::Array>();
-    for(Standard_Integer i=nodes.Lower(), idx=0; i<=nodes.Upper(); i++, idx++) {
-      const gp_Pnt& pnt = nodes.Value(i);
-      vtxArr->Set(Nan::GetCurrentContext(), 3*idx, Nan::New<v8::Number>(pnt.X()));
-      vtxArr->Set(Nan::GetCurrentContext(), 3*idx+1, Nan::New<v8::Number>(pnt.Y()));
-      vtxArr->Set(Nan::GetCurrentContext(), 3*idx+2, Nan::New<v8::Number>(pnt.Z()));
-    }
-
-    v8::Local<v8::Object> buffers = Nan::New<v8::Object>();
-    buffers->Set(Nan::New("vtx").ToLocalChecked(), vtxArr);
-    buffers->Set(Nan::New("idx").ToLocalChecked(), idxArr);
-
-    faceBuffers->Set(i, buffers);
-
-    //bufferMesh->addFace(topoFace);
+    v8::Handle<v8::Object> newOutput = Nan::New<v8::Object>();
+    extractFaceBuffer(topoFace, newOutput);
+    faceBuffers->Set(i, newOutput);
     exp.Next();
-
     i++;
   }
 
   buffers->Set(Nan::New("faceBuffers").ToLocalChecked(), faceBuffers);
 
-  //info.GetReturnValue().Set(bufferMeshHdl);
   info.GetReturnValue().Set(buffers);
 }
 
