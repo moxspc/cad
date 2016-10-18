@@ -50,6 +50,13 @@
               'LIB_DIR' : '<(OCC_ROOT)/lib'
             }
           }
+        ],
+        [ "OS=='mac'",
+          {
+            "variables" : {
+              'LIB_DIR' : '<(OCC_ROOT)/lib'
+            }
+          }
         ]
       ],
       "link_settings": {
@@ -140,6 +147,29 @@
                 '<(LIB_DIR)/libTKTopAlgo.a',
                 '<(LIB_DIR)/libTKernel.a',
                 '-Wl,--end-group'
+              ]
+            }
+          ],
+          [
+            "OS=='mac'",
+            {
+              "libraries": [
+                '<(LIB_DIR)/libTKBO.a',
+                '<(LIB_DIR)/libTKBRep.a',
+                '<(LIB_DIR)/libTKBool.a',
+                '<(LIB_DIR)/libTKFeat.a',
+                '<(LIB_DIR)/libTKFillet.a',
+                '<(LIB_DIR)/libTKG2d.a',
+                '<(LIB_DIR)/libTKG3d.a',
+                '<(LIB_DIR)/libTKGeomAlgo.a',
+                '<(LIB_DIR)/libTKGeomBase.a',
+                '<(LIB_DIR)/libTKHLR.a',
+                '<(LIB_DIR)/libTKMath.a',
+                '<(LIB_DIR)/libTKMesh.a',
+                '<(LIB_DIR)/libTKOffset.a',
+                '<(LIB_DIR)/libTKPrim.a',
+                '<(LIB_DIR)/libTKTopAlgo.a',
+                '<(LIB_DIR)/libTKernel.a'
               ]
             }
           ]
