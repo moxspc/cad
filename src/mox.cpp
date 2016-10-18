@@ -4,6 +4,7 @@
 #include "point.h"
 #include "vector.h"
 #include "lineseg.h"
+#include "circarc.h"
 
 #include "vertex.h"
 #include "edge.h"
@@ -19,6 +20,7 @@ void moxcad::init(Local<Object> exports)
   moxcad::Point::Init(geom);
   moxcad::Vector::Init(geom);
   moxcad::LineSegment::Init(geom);
+  moxcad::CircularArc::Init(geom);
 
   v8::Handle<Object> topo = Nan::New<v8::Object>();
   moxcad::Vertex::Init(topo);
@@ -37,7 +39,6 @@ void moxcad::init(Local<Object> exports)
   exports->Set(Nan::New("topo").ToLocalChecked(), topo);
   exports->Set(Nan::New("ops").ToLocalChecked(), ops);
   exports->Set(Nan::New("tess").ToLocalChecked(), tess);
-
 }
 
 NODE_MODULE(moxcad, moxcad::init)

@@ -8,7 +8,6 @@
 #include <TopoDS_Edge.hxx>
 #include <BRepBuilderAPI_MakeEdge.hxx>
 
-
 Nan::Persistent<v8::Function> moxcad::LineSegment::constructor;
 
 moxcad::LineSegment::LineSegment(const gp_Pnt &from, const gp_Pnt &to)
@@ -39,7 +38,9 @@ NAN_METHOD(moxcad::LineSegment::New)
 
   moxcad::Point *pntFrom = ObjectWrap::Unwrap<moxcad::Point>(info[0]->ToObject());
   moxcad::Point *pntTo = ObjectWrap::Unwrap<moxcad::Point>(info[1]->ToObject());
+
   LineSegment *obj = new LineSegment(pntFrom->toOCC(), pntTo->toOCC());
+
   obj->Wrap(info.This());
   info.GetReturnValue().Set(info.This());
 }
