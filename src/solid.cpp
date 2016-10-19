@@ -1,4 +1,6 @@
 
+#include <vector>
+
 #include "helper.h"
 #include "solid.h"
 #include "vertex.h"
@@ -51,13 +53,30 @@ NAN_METHOD(moxcad::Solid::New)
   info.GetReturnValue().Set(info.This());
 }
 
+bool isInLedger(
+  const std::vector<TopoDS_Shape>& ledger,
+  const TopoDS_Shape& entity)
+{
+  for(auto item : ledger) {
+    if(item.IsSame(entity)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 NAN_METHOD(moxcad::Solid::numFaces)
 {
   GET_SELF(moxcad::Solid, self);
   TopExp_Explorer exp(self->m_solid, TopAbs_FACE);
+  std::vector<TopoDS_Shape> faceLedger;
   unsigned int i=0;
   while(exp.More()) {
-    i++;
+    TopoDS_Face face = TopoDS::Face(exp.Current());
+    if(!isInLedger(faceLedger, face)) {
+      faceLedger.push_back(face);
+      i++;
+    }
     exp.Next();
   }
   info.GetReturnValue().Set(Nan::New<v8::Uint32>(i));
@@ -67,10 +86,12 @@ NAN_METHOD(moxcad::Solid::numEdges)
 {
   GET_SELF(moxcad::Solid, self);
   TopExp_Explorer exp(self->m_solid, TopAbs_EDGE);
+  std::vector<TopoDS_Shape> edgeLedger;
   unsigned int i=0;
   while(exp.More()) {
-    TopoDS_Edge topoEdge = TopoDS::Edge(exp.Current());
-    if(topoEdge.Orientation() == TopAbs_FORWARD) {
+    TopoDS_Edge edge = TopoDS::Edge(exp.Current());
+    if(!isInLedger(edgeLedger, edge)) {
+      edgeLedger.push_back(edge);
       i++;
     }
     exp.Next();
@@ -82,9 +103,14 @@ NAN_METHOD(moxcad::Solid::numVertices)
 {
   GET_SELF(moxcad::Solid, self);
   TopExp_Explorer exp(self->m_solid, TopAbs_VERTEX);
+  std::vector<TopoDS_Shape> vertexLedger;
   unsigned int i=0;
   while(exp.More()) {
-    i++;
+    TopoDS_Vertex vertex = TopoDS::Vertex(exp.Current());
+    if(!isInLedger(vertexLedger, vertex)) {
+      vertexLedger.push_back(vertex);
+      i++;
+    }
     exp.Next();
   }
   info.GetReturnValue().Set(Nan::New<v8::Uint32>(i));
@@ -100,7 +126,6 @@ NAN_METHOD(moxcad::Solid::numShells)
     exp.Next();
   }
   info.GetReturnValue().Set(Nan::New<v8::Uint32>(i));
-
 }
 
 NAN_METHOD(moxcad::Solid::eachVertex)
@@ -110,19 +135,25 @@ NAN_METHOD(moxcad::Solid::eachVertex)
 
   // Iterate over vertices
   GET_SELF(moxcad::Solid, self);
+
+  std::vector<TopoDS_Shape> vertexLedger;
   TopExp_Explorer exp(self->m_solid, TopAbs_VERTEX);
   while(exp.More()) {
     TopoDS_Vertex topoVtx = TopoDS::Vertex(exp.Current());
 
-    // Package the vertex into Javascript object and invoke callback with it
-    v8::Local<v8::Object> vtxInstance = moxcad::Vertex::NewInstance();
-    moxcad::Vertex *vtx = ObjectWrap::Unwrap<moxcad::Vertex>(vtxInstance);
-    vtx->setOCC(topoVtx);
+    if(!isInLedger(vertexLedger, topoVtx)) {
+      vertexLedger.push_back(topoVtx);
 
-    // Invoke callback
-    const unsigned int argc = 1;
-    v8::Local<v8::Value> argv[] = { vtxInstance };
-    Nan::MakeCallback(Nan::GetCurrentContext()->Global(), cb, argc, argv);
+      // Package the vertex into Javascript object and invoke callback with it
+      v8::Local<v8::Object> vtxInstance = moxcad::Vertex::NewInstance();
+      moxcad::Vertex *vtx = ObjectWrap::Unwrap<moxcad::Vertex>(vtxInstance);
+      vtx->setOCC(topoVtx);
+
+      // Invoke callback
+      const unsigned int argc = 1;
+      v8::Local<v8::Value> argv[] = { vtxInstance };
+      Nan::MakeCallback(Nan::GetCurrentContext()->Global(), cb, argc, argv);
+    }
 
     exp.Next();
   }
@@ -136,11 +167,15 @@ NAN_METHOD(moxcad::Solid::eachEdge)
 
   // Iterate over edges
   GET_SELF(moxcad::Solid, self);
+
+  std::vector<TopoDS_Shape> edgeLedger;
   TopExp_Explorer exp(self->m_solid, TopAbs_EDGE);
   while(exp.More()) {
     TopoDS_Edge topoEdge = TopoDS::Edge(exp.Current());
 
-    if(topoEdge.Orientation() == TopAbs_FORWARD) {
+    if(!isInLedger(edgeLedger, topoEdge)) {
+      edgeLedger.push_back(topoEdge);
+
       // Package the edge into Javascript object and invoke callback with it
       v8::Local<v8::Object> edgeInstance = moxcad::Edge::NewInstance();
       moxcad::Edge *edge = ObjectWrap::Unwrap<moxcad::Edge>(edgeInstance);
@@ -164,19 +199,25 @@ NAN_METHOD(moxcad::Solid::eachFace)
 
   // Iterate over faces
   GET_SELF(moxcad::Solid, self);
+
+  std::vector<TopoDS_Shape> faceLedger;
   TopExp_Explorer exp(self->m_solid, TopAbs_FACE);
   while(exp.More()) {
     TopoDS_Face topoFace = TopoDS::Face(exp.Current());
 
-    // Package the face into Javascript object and invoke callback with it
-    v8::Local<v8::Object> faceInstance = moxcad::Face::NewInstance();
-    moxcad::Face *face = ObjectWrap::Unwrap<moxcad::Face>(faceInstance);
-    face->setOCC(topoFace);
+    if(!isInLedger(faceLedger, topoFace)) {
+      faceLedger.push_back(topoFace);
 
-    // Invoke callback
-    const unsigned int argc = 1;
-    v8::Local<v8::Value> argv[] = { faceInstance };
-    Nan::MakeCallback(Nan::GetCurrentContext()->Global(), cb, argc, argv);
+      // Package the face into Javascript object and invoke callback with it
+      v8::Local<v8::Object> faceInstance = moxcad::Face::NewInstance();
+      moxcad::Face *face = ObjectWrap::Unwrap<moxcad::Face>(faceInstance);
+      face->setOCC(topoFace);
+
+      // Invoke callback
+      const unsigned int argc = 1;
+      v8::Local<v8::Value> argv[] = { faceInstance };
+      Nan::MakeCallback(Nan::GetCurrentContext()->Global(), cb, argc, argv);
+    }
 
     exp.Next();
   }
