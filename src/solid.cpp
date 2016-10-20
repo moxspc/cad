@@ -236,6 +236,7 @@ void extractEdgeBuffer(const TopoDS_Edge& edge, v8::Handle<v8::Object>& output)
   TopLoc_Location edgeLocation;
   const Handle(Poly_Polygon3D)& pt =
     BRep_Tool::Polygon3D(edge, edgeLocation);
+  const gp_Trsf& edgeTransform = edgeLocation.Transformation();
 
   const TColgp_Array1OfPnt& nodes = pt->Nodes();
 
@@ -245,6 +246,7 @@ void extractEdgeBuffer(const TopoDS_Edge& edge, v8::Handle<v8::Object>& output)
       iterNode++, idx++)
   {
     gp_Pnt pnt = nodes.Value(iterNode);
+    pnt.Transform(edgeTransform);
     v8::Local<v8::Array> point = Nan::New<v8::Array>();
     point->Set(0, Nan::New<v8::Number>(pnt.X()));
     point->Set(1, Nan::New<v8::Number>(pnt.Y()));
