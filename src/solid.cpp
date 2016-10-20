@@ -224,9 +224,40 @@ NAN_METHOD(moxcad::Solid::eachFace)
   info.GetReturnValue().Set(info.This());
 }
 
+void extractEdgeBuffer(const TopoDS_Edge& edge, v8::Handle<v8::Object>& output)
+{
+  const Standard_Real linDeflection = 0.01;
+  const Standard_Real angDeflection = 0.5;
+
+  BRepMesh_IncrementalMesh aMesh(
+    edge, linDeflection, Standard_False, angDeflection);
+  aMesh.Perform();
+
+  TopLoc_Location edgeLocation;
+  const Handle(Poly_Polygon3D)& pt =
+    BRep_Tool::Polygon3D(edge, edgeLocation);
+
+  const TColgp_Array1OfPnt& nodes = pt->Nodes();
+
+  v8::Local<v8::Array> pointArr = Nan::New<v8::Array>();
+  for(Standard_Integer iterNode = nodes.Lower(), idx=0;
+      iterNode <= nodes.Upper();
+      iterNode++, idx++)
+  {
+    gp_Pnt pnt = nodes.Value(iterNode);
+    v8::Local<v8::Array> point = Nan::New<v8::Array>();
+    point->Set(0, Nan::New<v8::Number>(pnt.X()));
+    point->Set(1, Nan::New<v8::Number>(pnt.Y()));
+    point->Set(2, Nan::New<v8::Number>(pnt.Z()));
+    pointArr->Set(idx, point);
+  }
+
+  output->Set(Nan::New("points").ToLocalChecked(), pointArr);
+}
+
 void extractFaceBuffer(const TopoDS_Face& face, v8::Handle<v8::Object>& output)
 {
-  const Standard_Real linDeflection   = 0.01;
+  const Standard_Real linDeflection = 0.01;
   const Standard_Real angDeflection = 0.5;
 
   v8::Local<v8::Context> ctx = Nan::GetCurrentContext();
@@ -366,22 +397,39 @@ NAN_METHOD(moxcad::Solid::tessellate)
 {
   v8::Local<v8::Object> buffers = Nan::New<v8::Object>();
   v8::Local<v8::Array> faceBuffers = Nan::New<v8::Array>();
+  v8::Local<v8::Array> edgeBuffers = Nan::New<v8::Array>();
 
   GET_SELF(moxcad::Solid, self);
 
-  TopExp_Explorer exp(self->m_solid, TopAbs_FACE);
+  TopExp_Explorer faceExp(self->m_solid, TopAbs_FACE);
 
   int i = 0;
-  while(exp.More()) {
-    TopoDS_Face topoFace = TopoDS::Face(exp.Current());
+  while(faceExp.More()) {
+    TopoDS_Face topoFace = TopoDS::Face(faceExp.Current());
     v8::Handle<v8::Object> newOutput = Nan::New<v8::Object>();
     extractFaceBuffer(topoFace, newOutput);
     faceBuffers->Set(i, newOutput);
-    exp.Next();
+    faceExp.Next();
     i++;
   }
 
+  i=0;
+  std::vector<TopoDS_Shape> edgeLedger;
+  TopExp_Explorer edgeExp(self->m_solid, TopAbs_EDGE);
+  while(edgeExp.More()) {
+    TopoDS_Edge topoEdge = TopoDS::Edge(edgeExp.Current());
+    if(!isInLedger(edgeLedger, topoEdge)) {
+      edgeLedger.push_back(topoEdge);
+      v8::Handle<v8::Object> newOutput = Nan::New<v8::Object>();
+      extractEdgeBuffer(topoEdge, newOutput);
+      edgeBuffers->Set(i, newOutput);
+      i++;
+    }
+    edgeExp.Next();
+  }
+
   buffers->Set(Nan::New("faceBuffers").ToLocalChecked(), faceBuffers);
+  buffers->Set(Nan::New("edgeBuffers").ToLocalChecked(), edgeBuffers);
 
   info.GetReturnValue().Set(buffers);
 }

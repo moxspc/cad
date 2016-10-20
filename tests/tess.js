@@ -23,5 +23,7 @@ describe('Tess', function() {
 
     var bufferMesh = solid.tessellate();
     assert(!!bufferMesh);
+    assert(bufferMesh.faceBuffers.length, 6);
+    assert(bufferMesh.edgeBuffers.length, 12);
   });
 });
