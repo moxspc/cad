@@ -16,13 +16,13 @@
       ],
       "conditions" : [
         [
-          "OS='win'",
+          "OS=='win'",
           {
             "cflags": ['-fPIC', '-std=c++0x', '-stdlib=libc++', '-Wall'],
           }
         ],
         [
-          "OS='linux'",
+          "OS=='linux'",
           {
             "cflags": ['-fPIC', '-std=c++0x', '-Wall'],
           }

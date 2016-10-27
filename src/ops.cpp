@@ -49,15 +49,25 @@ void moxcad::ops::extrude(const v8::FunctionCallbackInfo<v8::Value>& info)
 
 void moxcad::ops::approximate2d(const v8::FunctionCallbackInfo<v8::Value>& info)
 {
-  uint nPoints = info.Length();
+  CHECK_NUM_ARGUMENTS(info, 2);
+  v8::Local<v8::Array> coordList = v8::Handle<v8::Array>::Cast(info[0]);
+  v8::Local<v8::Object> options = info[1]->ToObject();
+
+  uint nPoints = coordList->Length();
   TColgp_Array1OfPnt2d arrPoints(1, nPoints);
   for(uint i=0; i<nPoints; i++) {
-    v8::Local<v8::Array> coord = v8::Handle<v8::Array>::Cast(info[i]);
+    v8::Local<v8::Array> coord = v8::Handle<v8::Array>::Cast(coordList->Get(i));
     arrPoints.SetValue(i+1,
       gp_Pnt2d(coord->Get(0)->NumberValue(), coord->Get(1)->NumberValue()));
   }
 
-  Geom2dAPI_PointsToBSpline api(arrPoints, 3,3,GeomAbs_G1, 10.0);
+  double tolerance = 10.0;
+  if(options->HasRealNamedProperty(Nan::New("tolerance").ToLocalChecked())) {
+    tolerance = options->Get(
+                Nan::New("tolerance").ToLocalChecked())->NumberValue();
+  }
+
+  Geom2dAPI_PointsToBSpline api(arrPoints, 3,3,GeomAbs_G1, tolerance);
 
   if(!api.IsDone()) {
     Nan::ThrowError("Geom2dAPI_PointsToBSpline not done");
@@ -86,14 +96,19 @@ void moxcad::ops::approximate2d(const v8::FunctionCallbackInfo<v8::Value>& info)
 
 void moxcad::ops::interpolate2d(const v8::FunctionCallbackInfo<v8::Value>& info)
 {
+  CHECK_NUM_ARGUMENTS(info, 2);
   v8::Local<v8::Array> coordList = v8::Handle<v8::Array>::Cast(info[0]);
+  v8::Local<v8::Object> options = info[1]->ToObject();
 
-  Nan::Maybe<bool> isClosedMaybe = Nan::To<bool>(info[1]);
-  bool isClosed;
-  if(isClosedMaybe.IsNothing()) {
-    isClosed = false;
-  } else {
-    isClosed = isClosedMaybe.FromJust();
+  bool isClosed = true;
+  if(options->HasRealNamedProperty(Nan::New("isClosed").ToLocalChecked())) {
+    isClosed = options->Get(
+                Nan::New("isClosed").ToLocalChecked())->BooleanValue();
+  }
+  double tolerance = 1e-6;
+  if(options->HasRealNamedProperty(Nan::New("tolerance").ToLocalChecked())) {
+    tolerance = options->Get(
+                Nan::New("tolerance").ToLocalChecked())->NumberValue();
   }
 
   uint nPoints = coordList->Length();
@@ -105,7 +120,7 @@ void moxcad::ops::interpolate2d(const v8::FunctionCallbackInfo<v8::Value>& info)
       gp_Pnt2d(coord->Get(0)->NumberValue(), coord->Get(1)->NumberValue()));
   }
 
-  Geom2dAPI_Interpolate api(arrPoints, isClosed, 1e-6);
+  Geom2dAPI_Interpolate api(arrPoints, isClosed, tolerance);
 
   api.Perform();
 
